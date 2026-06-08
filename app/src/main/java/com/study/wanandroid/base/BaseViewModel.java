@@ -1,5 +1,7 @@
 package com.study.wanandroid.base;
 
+import android.util.Log;
+
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
@@ -29,6 +31,7 @@ public abstract class BaseViewModel extends ViewModel {
             disposable.dispose();
             disposable.clear();
         }
+
     }
 
 }

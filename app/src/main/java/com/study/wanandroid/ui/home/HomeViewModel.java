@@ -180,8 +180,12 @@ public class HomeViewModel extends BaseViewModel {
      * 首次加载
      */
     public void firstLoad() {
-        pageState.setValue(Resource.loading());
-        getBannerTopAndArticle();
+        // ViewModel 的作用域是 HomeFragment，所以去到其它 Tab 时，ViewModel 没有销毁，再次进入会造成数据重复叠加
+        // 所以先判断，当然也可以先清空
+        if (allArticles.isEmpty()) {
+            pageState.setValue(Resource.loading());
+            getBannerTopAndArticle();
+        }
     }
 
     /**

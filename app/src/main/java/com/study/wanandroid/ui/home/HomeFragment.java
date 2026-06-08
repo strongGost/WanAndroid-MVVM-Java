@@ -21,6 +21,7 @@ import com.study.wanandroid.MyApplication;
 import com.study.wanandroid.R;
 import com.study.wanandroid.base.BaseFragment;
 import com.study.wanandroid.data.model.IBaseArticle;
+import com.study.wanandroid.data.remote.Resource;
 import com.study.wanandroid.ui.me.college.CollectViewModel;
 import com.study.wanandroid.data.model.ArticleBean;
 import com.study.wanandroid.data.remote.UIState;
