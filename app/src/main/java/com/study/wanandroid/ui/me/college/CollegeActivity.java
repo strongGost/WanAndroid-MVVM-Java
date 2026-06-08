@@ -14,6 +14,8 @@ import com.study.wanandroid.R;
 import com.study.wanandroid.base.BaseActivity;
 import com.study.wanandroid.data.model.CollectBean;
 import com.study.wanandroid.data.model.IBaseArticle;
+import com.study.wanandroid.data.remote.Event;
+import com.study.wanandroid.data.remote.Resource;
 import com.study.wanandroid.data.remote.UIState;
 import com.study.wanandroid.databinding.ActivityCollegeBinding;
 import com.study.wanandroid.ui.WebViewActivity;
@@ -129,7 +131,9 @@ public class CollegeActivity extends BaseActivity<ActivityCollegeBinding> {
                binding.stateLayout.switchView(status.getState());
            }
         });
-        collectViewModel.getStatus().observe(this, status -> {  // 取消收藏
+        collectViewModel.getStatus().observe(this, event -> {
+            Resource status = event.getContentIfNotHandled();
+            if (status == null) return;
             ToastUtil.show(CollegeActivity.this, status.getMsg());
             if (status.getState() == UIState.NEED_LOGIN) {    // 需要登录
                 Intent intent = new Intent(CollegeActivity.this, LoginActivity.class);

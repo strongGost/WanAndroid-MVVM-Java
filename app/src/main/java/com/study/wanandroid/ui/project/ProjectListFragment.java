@@ -20,6 +20,7 @@ import com.scwang.smart.refresh.layout.listener.OnRefreshListener;
 import com.study.wanandroid.R;
 import com.study.wanandroid.base.BaseFragment;
 import com.study.wanandroid.data.model.IBaseArticle;
+import com.study.wanandroid.data.remote.Resource;
 import com.study.wanandroid.ui.me.college.CollectViewModel;
 import com.study.wanandroid.data.model.ArticleBean;
 import com.study.wanandroid.data.remote.UIState;
@@ -126,7 +127,9 @@ public class ProjectListFragment extends BaseFragment<FragmentProjectListBinding
         viewModel.getProjectList().observe(getViewLifecycleOwner(), data -> {
             adapter.submitList(data);
         });
-        collectViewModel.getStatus().observe(getViewLifecycleOwner(), resource -> {
+        collectViewModel.getStatus().observe(getViewLifecycleOwner(), event -> {
+            Resource resource = event.getContentIfNotHandled();
+            if (resource == null) return ;
             ToastUtil.show(requireContext(), resource.getMsg());
             if (resource.getState() == UIState.NEED_LOGIN) {    // 需要登录
                 Intent intent = new Intent(requireContext(), LoginActivity.class);

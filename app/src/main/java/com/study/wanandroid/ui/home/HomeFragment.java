@@ -6,7 +6,6 @@ import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.ViewModelProvider;
@@ -21,6 +20,7 @@ import com.study.wanandroid.MyApplication;
 import com.study.wanandroid.R;
 import com.study.wanandroid.base.BaseFragment;
 import com.study.wanandroid.data.model.IBaseArticle;
+import com.study.wanandroid.data.remote.Event;
 import com.study.wanandroid.data.remote.Resource;
 import com.study.wanandroid.ui.me.college.CollectViewModel;
 import com.study.wanandroid.data.model.ArticleBean;
@@ -32,6 +32,8 @@ import com.study.wanandroid.utils.Constant;
 import com.study.wanandroid.utils.LogUtil;
 import com.study.wanandroid.utils.NetWorkUtil;
 import com.study.wanandroid.utils.ToastUtil;
+
+import java.util.List;
 
 public class HomeFragment extends BaseFragment<FragmentHomeBinding> {
     private HomeViewModel viewModel;
@@ -76,14 +78,25 @@ public class HomeFragment extends BaseFragment<FragmentHomeBinding> {
                 articleAdapter.submitList(articles);
             }
         });
-        collectViewModel.getStatus().observe(getViewLifecycleOwner(), resource -> {
-            //TODO: 每次进入都会弹出上次操作的提示
+        collectViewModel.getStatus().observe(getViewLifecycleOwner(), event -> {
+            Resource resource = event.getContentIfNotHandled();
+            if (resource == null) return;
             ToastUtil.show(requireContext(), resource.getMsg());
             if (resource.getState() == UIState.NEED_LOGIN) {    // 需要登录
                 Intent intent = new Intent(requireContext(), LoginActivity.class);
                 startActivity(intent);
             }
-
+        });
+        collectViewModel.getCollectedChanged().observe(getViewLifecycleOwner(), article -> {
+            if (article != null) {
+                List<ArticleBean> items = articleAdapter.getItems();
+                for (int i = 0; i < items.size(); i++) {
+                    if (items.get(i).getUniqueId().equals(article.getUniqueId())) {
+                        articleAdapter.notifyItemChanged(i);
+                        break;
+                    }
+                }
+            }
         });
     }
 

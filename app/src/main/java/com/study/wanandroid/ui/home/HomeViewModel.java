@@ -92,6 +92,7 @@ public class HomeViewModel extends BaseViewModel {
                     /* 置顶文章 */
                     ArrayList<ArticleBean> articles = new ArrayList<>();
                     if (topResponse.isSuccess() && topResponse.getData() != null && !topResponse.getData().isEmpty()) {
+                        Log.e("置顶文章: ", topResponse.getData().get(0).isCollect()+"");
                         articles.addAll(topResponse.getData());
                     }
 

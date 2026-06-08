@@ -3,6 +3,7 @@ package com.study.wanandroid.ui.me.college;
 
 import android.annotation.SuppressLint;
 import android.text.TextUtils;
+import android.util.Log;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
@@ -12,6 +13,7 @@ import com.study.wanandroid.data.model.ArticleBean;
 import com.study.wanandroid.data.model.CollectBean;
 import com.study.wanandroid.data.model.IBaseArticle;
 import com.study.wanandroid.data.model.PageDataBean;
+import com.study.wanandroid.data.remote.Event;
 import com.study.wanandroid.data.remote.Resource;
 import com.study.wanandroid.data.remote.UIState;
 import com.study.wanandroid.data.remote.api.CollectService;
@@ -26,12 +28,15 @@ import io.reactivex.rxjava3.schedulers.Schedulers;
 
 /**
  * 收藏相关操作
+ * 注：站外的文章，收藏后只会在 收藏列表出现（这是鸿洋 API）的问题
+ *
  */
 public class CollectViewModel extends BaseViewModel {
     private final CollectRepository repository = CollectRepository.getInstance();
-    private final MutableLiveData<Resource> status = new MutableLiveData<>(); // 网络状态（收藏结果）
+    private final MutableLiveData<Event<Resource>> status = new MutableLiveData<>(); // 网络状态（收藏结果）
     private final MutableLiveData<Resource> listStatus = new MutableLiveData<>(); // 网络状态（收藏文章列表）
     private final MutableLiveData<List<CollectBean>> articles = new MutableLiveData<>();
+    private final MutableLiveData<IBaseArticle> collectedChanged = new MutableLiveData<>(); // 存储 收藏/取消收藏 的文章对象（用于ui层通知）
     private final List<CollectBean> allArticles = new ArrayList<>();
     private PageDataBean<List<CollectBean>> pageData = null;  // 分页信息
 
@@ -39,12 +44,16 @@ public class CollectViewModel extends BaseViewModel {
         return articles;
     }
 
-    public LiveData<Resource> getStatus() {
+    public LiveData<Event<Resource>> getStatus() {
         return status;
     }
 
     public LiveData<Resource> getListStatus() {
         return listStatus;
+    }
+
+    public LiveData<IBaseArticle> getCollectedChanged() {
+        return collectedChanged;
     }
 
     /**
@@ -62,9 +71,9 @@ public class CollectViewModel extends BaseViewModel {
         } else {    // 收藏----
             ArticleBean bean = (ArticleBean) data;
             if (TextUtils.isEmpty(bean.getAuthor())) {   // 站外文章（没有作者，只有分享者）
-                collect(bean.getTitle(), bean.getAuthor(), bean.getLink());
+                collect(bean.getTitle(), bean.getAuthor(), bean.getLink(), data);
             } else {     // 站内文章
-                collect(bean.getId());
+                collect(bean.getId(), data);
             }
         }
     }
@@ -72,29 +81,29 @@ public class CollectViewModel extends BaseViewModel {
 
     /**
      * 收藏站内文章
-     * @param id
+     * @param id 文章id
+     * @param data 被收藏的文章对象
      */
-    @SuppressLint("CheckResult")
-    private void collect(int id) {
+    private void collect(int id, IBaseArticle data) {
         if (isLoading(status)) return;
-
         disposable.add(
             repository.collect(id)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(resp -> {
-                        if (resp.isSuccess()) { // 成功
-                            status.setValue(Resource.success("收藏成功"));
-                            // 更改“点击文章”的收藏状态
-                        } else if (resp.isOutLogin()){  // 未登录
-                            status.setValue(Resource.outLogin());
+                        if (resp.isSuccess()) {
+                            status.setValue(new Event<>(Resource.success("收藏成功")));
+                            data.setCollected(true);
+                            collectedChanged.setValue(data);
+                        } else if (resp.isOutLogin()){
+                            status.setValue(new Event<>(Resource.outLogin()));
                         } else {
-                            LogUtil.error(CollectService.class, "数据请求失败" + resp.getErrorMsg());
-                            status.setValue(Resource.error(resp.getErrorMsg()));
+                            LogUtil.error(CollectService.class, "数据响应错误" + resp.getErrorMsg());
+                            status.setValue(new Event<>(Resource.error(resp.getErrorMsg())));
                         }
                     }, throwable -> {
                         LogUtil.error(CollectService.class, "数据请求失败" + throwable.getMessage());
-                        status.setValue(Resource.error(throwable.getMessage()));
+                        status.setValue(new Event<>(Resource.error(throwable.getMessage())));
                     })
         );
             }
@@ -102,8 +111,16 @@ public class CollectViewModel extends BaseViewModel {
     /**
      * @return 当前是否处于加载状态
      */
-    private boolean isLoading(MutableLiveData<Resource> data) {
-        return data.getValue() != null && data.getValue().getState() == UIState.LOADING;
+    private boolean isLoading(MutableLiveData<?> data) {
+        Object value = data.getValue();
+        if (value instanceof Event) {
+            Resource resource = ((Event<Resource>) value).peekContent();
+            return resource != null && resource.getState() == UIState.LOADING;
+        }
+        if (value instanceof Resource) {
+            return ((Resource) value).getState() == UIState.LOADING;
+        }
+        return false;
     }
 
     /**
@@ -162,7 +179,7 @@ public class CollectViewModel extends BaseViewModel {
     }
 
     @SuppressLint("CheckResult")
-    private void collect(String title, String author, String link) {
+    private void collect(String title, String author, String link, IBaseArticle data) {
         if (isLoading(status)) return;
 
         disposable.add(
@@ -170,16 +187,18 @@ public class CollectViewModel extends BaseViewModel {
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(resp -> {
-                        if (resp.isSuccess()) { // 成功
-                            status.setValue(Resource.success("收藏成功"));
+                        if (resp.isSuccess()) {
+                            status.setValue(new Event<>(Resource.success("收藏成功")));
+                            data.setCollected(true);
+                            collectedChanged.setValue(data);
                         } else if (resp.isOutLogin()){
-                            status.setValue(Resource.outLogin());
+                            status.setValue(new Event<>(Resource.outLogin()));
                         } else {
-                            status.setValue(Resource.error(resp.getErrorMsg()));
-                            LogUtil.error(CollectService.class, "数据请求失败: " + resp.getErrorMsg());
+                            status.setValue(new Event<>(Resource.error(resp.getErrorMsg())));
+                            LogUtil.error(CollectService.class, "数据响应错误: " + resp.getErrorMsg());
                         }
                     }, throwable -> {
-                        status.setValue(Resource.error(throwable.getMessage()));
+                        status.setValue(new Event<>(Resource.error(throwable.getMessage())));
                         LogUtil.error(CollectService.class, "数据请求失败" + throwable.getMessage());
                     })
         );
@@ -195,16 +214,18 @@ public class CollectViewModel extends BaseViewModel {
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(resp -> {
                         if (resp.isSuccess()) {
-                            status.setValue(Resource.success("已取消收藏"));
+                            status.setValue(new Event<>(Resource.success("已取消收藏")));
+                            data.setCollected(false);
+                            collectedChanged.setValue(data);
                             removeArticleById(data.getUniqueId());
                         } else if (resp.isOutLogin()) {
-                            status.setValue(Resource.outLogin());
+                            status.setValue(new Event<>(Resource.outLogin()));
                         } else {
-                            status.setValue(Resource.error(resp.getErrorMsg()));
+                            status.setValue(new Event<>(Resource.error(resp.getErrorMsg())));
                             LogUtil.error(CollectService.class, "数据请求失败" + resp.getErrorMsg());
                         }
                     }, throwable -> {
-                        status.setValue(Resource.error(throwable.getMessage()));
+                        status.setValue(new Event<>(Resource.error(throwable.getMessage())));
                         LogUtil.error(CollectService.class, "数据请求失败" + throwable.getMessage());
                     })
         );
@@ -227,16 +248,18 @@ public class CollectViewModel extends BaseViewModel {
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(resp -> {
                         if (resp.isSuccess()) {
-                            status.setValue(Resource.success("已取消收藏"));
+                            status.setValue(new Event<>(Resource.success("已取消收藏")));
+                            data.setCollected(false);
+                            collectedChanged.setValue(data);
                             removeArticleById(data.getUniqueId());
                         } else if (resp.isOutLogin()) {
-                            status.setValue(Resource.outLogin());
+                            status.setValue(new Event<>(Resource.outLogin()));
                         } else {
-                            status.setValue(Resource.error(resp.getErrorMsg()));
+                            status.setValue(new Event<>(Resource.error(resp.getErrorMsg())));
                             LogUtil.error(CollectService.class, "数据请求失败" + resp.getErrorMsg());
                         }
                     }, throwable -> {
-                        status.setValue(Resource.error(throwable.getMessage()));
+                        status.setValue(new Event<>(Resource.error(throwable.getMessage())));
                         LogUtil.error(CollectService.class, "数据请求失败" + throwable.getMessage());
                     })
         );
