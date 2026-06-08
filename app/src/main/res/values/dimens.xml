@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="state_size_sp">20sp</dimen>
+    <dimen name="item_article_title_font_size">16sp</dimen>
+    <dimen name="item_article_pad">10dp</dimen>
+    <dimen name="item_tab_text_pad">10dp</dimen>
+    <dimen name="item_article_small">12sp</dimen>
+    <dimen name="label_title">14sp</dimen>
+    <dimen name="label_tv_margin">4dp</dimen>
+    <dimen name="title_size">18sp</dimen>
+    <dimen name="article_height_100dp">100dp</dimen>
+    <dimen name="article_height_150dp">140dp</dimen>
+    <dimen name="me_item_pad">10dp</dimen>
+    <dimen name="login_tv_size">30sp</dimen>
+</resources>

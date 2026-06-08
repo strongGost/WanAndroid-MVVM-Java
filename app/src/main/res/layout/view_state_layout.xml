@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_gravity="center">
+
+    <!-- 网络状态布局（通过代码添加）-->
+    <!--内容布局 -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/state_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
+
+</FrameLayout>

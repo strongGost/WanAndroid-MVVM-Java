@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/home_destination">
+
+    <fragment
+        android:id="@+id/home_destination"
+        android:name="com.study.wanandroid.ui.home.HomeFragment"
+        android:label="HomeFragment" />
+    <fragment
+        android:id="@+id/square_destination"
+        android:name="com.study.wanandroid.ui.square.SquareFragment"
+        android:label="SquareFragment" />
+    <fragment
+        android:id="@+id/weChat_destination"
+        android:name="com.study.wanandroid.ui.wechat.WeChatFragment"
+        android:label="WeChatFragment" />
+    <fragment
+        android:id="@+id/project_destination"
+        android:name="com.study.wanandroid.ui.project.ProjectFragment"
+        android:label="ProjectFragment" />
+    <fragment
+        android:id="@+id/me_destination"
+        android:name="com.study.wanandroid.ui.me.MeFragment"
+        android:label="MeFragment" />
+</navigation>

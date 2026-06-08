@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/home_destination"
+        android:icon="@drawable/baseline_home_24"
+        android:title="@string/nav_home"/>
+    <item
+        android:id="@+id/square_destination"
+        android:icon="@drawable/square"
+        android:title="@string/nav_square" />
+    <item
+        android:id="@+id/weChat_destination"
+        android:icon="@drawable/wechat_24"
+        android:title="@string/nav_wechat" />
+    <item
+        android:id="@+id/project_destination"
+        android:icon="@drawable/project_24"
+        android:title="@string/nav_project" />
+    <item
+        android:id="@+id/me_destination"
+        android:icon="@drawable/baseline_person_24"
+        android:title="@string/nav_me" />
+</menu>

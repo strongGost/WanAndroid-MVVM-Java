@@ -1,0 +1,31 @@
+<resources>
+    <string name="app_name">WanAndroid-MVVM</string>
+    <string name="nav_home">home</string>
+    <string name="nav_square">square</string>
+    <string name="nav_wechat">wechat</string>
+    <string name="nav_project">project</string>
+    <string name="nav_me">me</string>
+    <string name="state_tx_loading">loading</string>
+    <string name="state_tx_error">Failed to load,please click to retry.</string>
+    <string name="tx_retry">retry</string>
+    <string name="state_tx_empty">The data is empty.</string>
+    <string name="tv_new">new</string>
+    <string name="tv_up">up</string>
+    <string name="system_tx">System</string>
+    <string name="guide_tx">Guide</string>
+    <string name="my_score">my_score</string>
+    <string name="now_score_text">now_score:</string>
+    <string name="my_college">my college</string>
+    <string name="my_share">my share</string>
+
+    <string name="text_out_login">Not logged in</string>
+    <string name="register">Register</string>
+    <string name="login">Log in</string>
+    <string name="please_login">Please input username</string>
+    <string name="please_pwd">Please input password</string>
+    <string name="please_repwd">Please input password again</string>
+    <string name="clean_cache">clean_cache</string>
+    <string name="log_out">Log out</string>
+    <string name="my_score_text">my score</string>
+
+</resources>

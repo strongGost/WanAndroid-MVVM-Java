@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.study.wanandroid.ui.widget.WaveView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/wave_header_background"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="@dimen/item_article_pad">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ImageView
+            android:id="@+id/iv_user_avater"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:src="@mipmap/ic_launcher_round"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_marginBottom="20dp" />
+
+        <TextView
+            android:id="@+id/tv_account"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:text="未登录"
+            android:textColor="@color/white"
+            android:textSize="@dimen/title_size"
+            app:layout_constraintBottom_toTopOf="@+id/tv_id"
+            app:layout_constraintStart_toEndOf="@+id/iv_user_avater"
+            app:layout_constraintTop_toTopOf="@+id/iv_user_avater"
+            app:layout_constraintVertical_chainStyle="packed" />
+
+        <TextView
+            android:id="@+id/tv_id"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:textColor="#E0E0E0"
+            app:layout_constraintBottom_toBottomOf="@+id/iv_user_avater"
+            app:layout_constraintStart_toStartOf="@+id/tv_account"
+            app:layout_constraintTop_toBottomOf="@+id/tv_account"
+            tools:text="ID: 32"
+            android:visibility="gone"/>
+
+        <TextView
+            android:id="@+id/tv_level"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:background="@drawable/tv_border"
+            android:textColor="@color/white"
+            android:textSize="10sp"
+            app:layout_constraintBaseline_toBaselineOf="@+id/tv_id"
+            app:layout_constraintStart_toEndOf="@+id/tv_id"
+            tools:text="lv.13"
+            android:visibility="gone"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</com.study.wanandroid.ui.widget.WaveView>

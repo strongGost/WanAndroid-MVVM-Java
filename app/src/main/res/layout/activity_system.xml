@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 使用约束布局，会导致 RecyclerView 的最后一项被遮挡，
+因为 沉浸式模式，中 约束布局的测量的底部是屏幕的最低端（包含导航栏）
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.system.SystemActivity"
+    android:orientation="vertical">
+
+    <!-- 标题 -->
+    <RelativeLayout
+        android:id="@+id/rl_head"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/main_color"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/iv_back"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="@dimen/item_article_pad"
+            app:srcCompat="@drawable/baseline_chevron_white_left_24" />
+
+        <TextView
+            android:id="@+id/tv_system_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_centerHorizontal="true"
+            tools:text="四大组件"
+            android:textColor="@color/white"
+            android:textSize="@dimen/title_size"
+            android:textStyle="bold" />
+    </RelativeLayout>
+    <!-- 下方 tab -->
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/tab_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/main_color"
+        app:tabMode="scrollable"
+        app:tabGravity="start"
+        app:tabIndicatorHeight="0dp"
+        app:tabTextColor="#98FFFFFF"
+        app:tabSelectedTextColor="@color/white"/>
+
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/vp2"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"/>
+</LinearLayout>

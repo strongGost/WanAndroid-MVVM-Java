@@ -1,0 +1,83 @@
+plugins {
+    alias(libs.plugins.android.application)
+}
+
+android {
+    namespace 'com.study.wanandroid'
+    compileSdk 36
+
+    defaultConfig {
+        applicationId "com.study.wanandroid"
+        minSdk 27
+        targetSdk 35
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
+    }
+    buildFeatures {
+        viewBinding true
+    }
+    packagingOptions {
+        resources {
+            excludes += "META-INF/versions/9/OSGI-INF/MANIFEST.MF"
+        }
+    }
+}
+
+dependencies {
+
+    def refresh_version = '3.0.0'
+    def retrofit_version = "3.0.0"
+    def rxjava3_version = "3.1.12"
+    def rxAndroid_version = "3.0.2"
+    def okhttp_version = "5.3.0"
+
+    // 流式标签
+    implementation 'com.google.android.flexbox:flexbox:3.0.0'
+    // recycle adapter 封装
+    implementation("io.github.cymchad:BaseRecyclerViewAdapterHelper4:4.3.4")
+    
+    // okhttp日志拦截器
+    implementation("com.squareup.okhttp3:logging-interceptor:$okhttp_version")
+
+    // rxjava3、rxandroid
+    implementation "io.reactivex.rxjava3:rxjava:$rxjava3_version"
+    implementation "io.reactivex.rxjava3:rxandroid:$rxAndroid_version"
+
+    // retrofit、gson
+    implementation "com.squareup.retrofit2:converter-gson:$retrofit_version"
+    implementation "com.squareup.retrofit2:retrofit:$retrofit_version"
+    // retrofit、rxjava3 call adapter
+    implementation "com.squareup.retrofit2:adapter-rxjava3:$retrofit_version"
+
+    // banner、 图片加载
+    implementation 'io.github.youth5201314:banner:2.2.3'
+    implementation 'com.github.bumptech.glide:glide:5.0.5'
+
+    // 下拉刷新、上拉加载
+    implementation  "io.github.scwang90:refresh-layout-kernel:$refresh_version-alpha"
+    implementation  "io.github.scwang90:refresh-header-classics:$refresh_version-alpha"
+    implementation  "io.github.scwang90:refresh-footer-classics:$refresh_version-alpha"
+
+    implementation libs.appcompat
+    implementation libs.material
+    implementation libs.activity
+    implementation libs.constraintlayout
+    implementation libs.navigation.fragment
+    implementation libs.navigation.ui
+    testImplementation libs.junit
+    androidTestImplementation libs.ext.junit
+    androidTestImplementation libs.espresso.core
+}

@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="120dp"
+    android:padding="@dimen/item_article_pad"
+    android:background="@color/white">
+
+    <TextView
+        android:id="@+id/tv_new"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/tv_new"
+        android:textColor="@color/main_color"
+        android:textSize="@dimen/item_article_small"
+        app:layout_constraintBottom_toBottomOf="@+id/tv_author"
+        app:layout_constraintBottom_toTopOf="@+id/tv_title"
+        app:layout_constraintStart_toStartOf="@+id/tv_title"
+        app:layout_constraintTop_toTopOf="@+id/tv_author"
+        app:layout_constraintVertical_bias="0.088" />
+
+    <TextView
+        android:id="@+id/tv_author"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        app:layout_goneMarginStart="0dp"
+        android:gravity="start"
+        app:layout_constraintEnd_toStartOf="@+id/guideline"
+        app:layout_constraintStart_toEndOf="@+id/tv_new"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/tv_title"
+        tools:text="author" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.7" />
+
+    <TextView
+        android:id="@+id/tv_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="@dimen/item_article_small"
+        app:layout_constraintBottom_toBottomOf="@+id/tv_author"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/tv_author"
+        app:layout_constraintVertical_chainStyle="spread_inside"
+        tools:text="1小时前" />
+
+    <ImageView
+        android:id="@+id/favorite"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="@+id/tv_Chapter"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/tv_Chapter"
+        app:layout_constraintVertical_chainStyle="spread_inside"
+        app:srcCompat="@drawable/baseline_favorite_border_24" />
+
+    <TextView
+        android:id="@+id/tv_title"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:gravity="start"
+        android:maxLines="2"
+        android:textSize="16sp"
+        android:textColor="@color/black"
+        app:layout_constraintBottom_toTopOf="@+id/tv_Chapter"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_author"
+        tools:text="Android干货资源来咯\n第二行" />
+
+    <TextView
+        android:id="@+id/tv_up"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/tv_up"
+        android:textColor="@color/article_tv_up"
+        app:layout_constraintBottom_toBottomOf="@+id/tv_Chapter"
+        app:layout_constraintStart_toStartOf="@+id/tv_title"
+        app:layout_constraintTop_toTopOf="@+id/tv_Chapter" />
+
+    <!-- superChapter·Chapter -->
+    <TextView
+        android:id="@+id/tv_Chapter"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        app:layout_goneMarginStart="0dp"
+        android:layout_marginTop="5dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/tv_up"
+        app:layout_constraintTop_toBottomOf="@+id/tv_title"
+        tools:text="广场Tab·自助" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
