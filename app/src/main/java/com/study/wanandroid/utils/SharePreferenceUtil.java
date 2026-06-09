@@ -43,6 +43,11 @@ public class SharePreferenceUtil {
         }
     }
 
+    public static Boolean hasObj(String key) {
+        openSP();
+        return sp.contains(key);
+    }
+
 
     /**
      * 读取 sp 文件的指定内容

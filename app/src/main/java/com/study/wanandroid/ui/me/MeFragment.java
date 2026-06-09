@@ -1,14 +1,20 @@
 package com.study.wanandroid.ui.me;
 
 import android.annotation.SuppressLint;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -34,6 +40,7 @@ public class MeFragment extends BaseFragment<FragmentMeBinding> {
 
     private MeViewModel viewModel;
     private int score;
+    private AlertDialog loadingDialog;
 
     @Override
     protected FragmentMeBinding getViewBinding(LayoutInflater inflater, ViewGroup container) {
@@ -48,6 +55,7 @@ public class MeFragment extends BaseFragment<FragmentMeBinding> {
             Intent intent = new Intent(requireContext(), LoginActivity.class);
             startActivity(intent);
         });
+
         binding.ivIcon.setOnClickListener(v -> goToActivity(0));
         binding.tvMyScore.setOnClickListener(v -> goToActivity(0));
         binding.tvNowScore.setOnClickListener(v -> goToActivity(0));
@@ -61,8 +69,11 @@ public class MeFragment extends BaseFragment<FragmentMeBinding> {
         binding.tvShare.setOnClickListener(v -> goToActivity(2));
         binding.ivShare.setOnClickListener(v -> goToActivity(2));
 
-        binding.tvCacheSize.setOnClickListener(v -> goToActivity(3));
-        binding.ivGithub.setOnClickListener(v -> goToActivity(3));
+        binding.tvCacheSize.setOnClickListener(v -> showDialog());
+        binding.ivGithub.setOnClickListener(v -> showDialog());
+
+        // 退出登录
+        binding.tvLogout.setOnClickListener(v -> viewModel.logOut());
     }
 
 
@@ -87,12 +98,47 @@ public class MeFragment extends BaseFragment<FragmentMeBinding> {
                 break;
             case 2: // 分享页面
                 break;
-            case 3: // 清理缓存 弹窗
-                break;
         }
         if (intent != null) {
             startActivity(intent);
         }
+    }
+
+
+    /**
+     * 弹出弹窗，询问是否清理缓存
+     */
+    private void showDialog() {
+        AlertDialog dialog = new AlertDialog.Builder(requireContext())
+                .setTitle(getString(R.string.clear_cache))
+                .setMessage(getString(R.string.clear_cache_content))
+                .setPositiveButton(getString(R.string.yes), (d, which) -> {
+                    // 显示 Loading、删除
+                    showLoadingDialog();
+                    viewModel.clearCache();
+                })
+                .setNegativeButton(getString(R.string.no), null)
+                .show();
+    }
+
+
+    /**
+     * 显示 删除中 loading...
+     */
+    private void showLoadingDialog() {
+        LinearLayout loadingView = new LinearLayout(requireContext()); // 动态创建加载布局
+        loadingView.setOrientation(LinearLayout.VERTICAL);
+        loadingView.setPadding(16, 16, 16, 16);
+        loadingView.setGravity(Gravity.CENTER_VERTICAL);
+        loadingView.addView(new ProgressBar(requireContext()));
+        TextView textView = new TextView(requireContext());
+        textView.setText(getString(R.string.clear_loading));
+        loadingView.addView(textView);
+
+        loadingDialog = new AlertDialog.Builder(requireContext())
+                .setView(loadingView)
+                .setCancelable(false)   // 不可取消
+                .show();
     }
 
     @Override
@@ -123,11 +169,33 @@ public class MeFragment extends BaseFragment<FragmentMeBinding> {
                 binding.headerLayout.tvId.setVisibility(View.GONE);
             }
         });
+        viewModel.getCacheSize().observe(getViewLifecycleOwner(), size -> {
+            binding.tvCacheSize.setText(size);
+        });
+        viewModel.getClearCacheSuccess().observe(getViewLifecycleOwner(), event -> {
+            Boolean success = event.getContentIfNotHandled();
+            if (success == null) return;
+
+            dismissLoadingDialog(); // 销毁 “删除对话框”
+
+            ToastUtil.show(requireContext(), success ? "清理缓存成功" : "部分缓存清理失败");
+            viewModel.calculateCacheSize();
+        });
+    }
+
+    /**
+     * 关闭加载中 弹窗
+     */
+    private void dismissLoadingDialog() {
+        if (loadingDialog != null) {
+            loadingDialog.dismiss();
+        }
     }
 
     @Override
     protected void initData() {
         viewModel.getMeData();
+        viewModel.calculateCacheSize();
     }
 
 }

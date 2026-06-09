@@ -1,7 +1,13 @@
 package com.study.wanandroid.ui.me;
 
+import android.annotation.SuppressLint;
+import android.app.Application;
+import android.content.Context;
 import android.support.v4.os.IResultReceiver;
+import android.util.Log;
 
+import androidx.annotation.NonNull;
+import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
@@ -9,27 +15,86 @@ import androidx.lifecycle.ViewModel;
 import com.study.wanandroid.base.BaseViewModel;
 import com.study.wanandroid.data.model.MeInfo;
 import com.study.wanandroid.data.model.UserBean;
+import com.study.wanandroid.data.remote.Event;
 import com.study.wanandroid.data.remote.Resource;
+import com.study.wanandroid.data.remote.UIState;
+import com.study.wanandroid.data.remote.WanCookieJar;
 import com.study.wanandroid.data.repository.MeRepository;
+import com.study.wanandroid.utils.CacheUtil;
 import com.study.wanandroid.utils.Constant;
 import com.study.wanandroid.utils.LogUtil;
 import com.study.wanandroid.utils.SharePreferenceUtil;
 
+import java.util.Objects;
+
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.core.Scheduler;
+import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
+import okhttp3.Cache;
 
-public class MeViewModel extends BaseViewModel {
-    private MeRepository repository = MeRepository.getInstance();
-    private MutableLiveData<Resource> state = new MutableLiveData<>();  // 网络状态
-    private MutableLiveData<MeInfo> meInfo = new MutableLiveData<>();
+public class MeViewModel extends AndroidViewModel {
+    private final MeRepository repository = MeRepository.getInstance();
+    private final MutableLiveData<Resource> state = new MutableLiveData<>();  // 网络状态
+    private final MutableLiveData<MeInfo> meInfo = new MutableLiveData<>();
+    private final CompositeDisposable disposable = new CompositeDisposable();
+    private final MutableLiveData<String> cacheSize = new MutableLiveData<>();  // 应用所占缓存大小
+    private final MutableLiveData<Event<Boolean>> clearCacheSuccess = new MutableLiveData<>();  // 删除缓存是否成功
+
+
+    public MeViewModel(@NonNull Application application) {
+        super(application);
+    }
 
     public LiveData<Resource> getState() {
         return state;
     }
 
+    public LiveData<Event<Boolean>> getClearCacheSuccess() {
+        return clearCacheSuccess;
+    }
+
     public LiveData<MeInfo> getMeInfo() {
         return meInfo;
+    }
+
+    public LiveData<String> getCacheSize() {
+        return cacheSize;
+    }
+
+    /**
+     * 计算缓存（IO 线程）
+     */
+    public void calculateCacheSize() {
+        disposable.add(
+                CacheUtil.getTotalCacheSize(getApplication())
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(cacheSize::setValue,
+                                throwable -> LogUtil.error(MeViewModel.class, "计算缓存失败：" + throwable.getMessage()))
+        );
+    }
+
+    /**
+     * 删除应用缓存（IO 线程），完成后通过 clearCacheSuccess 通知结果
+     */
+    public void clearCache() {
+        // 1. 清除 Glide 内存缓存（必须在主线程）
+        CacheUtil.clearGlideMemory(getApplication());
+
+        // 2. 清除磁盘 + Glide 磁盘缓存（必须在后台线程）
+        disposable.add(
+                CacheUtil.clearAll(getApplication())
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(success -> {
+                            clearCacheSuccess.setValue(new Event<>(success));
+                            calculateCacheSize();  // 重新计算
+                        }, throwable -> {
+                            clearCacheSuccess.setValue(new Event<>(false));
+                            LogUtil.error(MeViewModel.class, "清理缓存失败：" + throwable.getMessage());
+                        })
+        );
     }
 
     /**
@@ -43,7 +108,8 @@ public class MeViewModel extends BaseViewModel {
         }
         // 再网络
         state.setValue(Resource.loading());
-        addDisposable(repository.getMeInfo()
+        disposable.add(
+                repository.getMeInfo()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(response -> {
@@ -59,7 +125,53 @@ public class MeViewModel extends BaseViewModel {
                 }, throwable -> {
                     state.setValue(Resource.error(throwable.getMessage()));
                     LogUtil.error(MeViewModel.class, "请求发送失败：" + throwable.getMessage());
-                }));
+                })
+        );
     }
 
+
+    /**
+     * 退出登录、成功后清除 Cookie、用户数据
+     */
+    @SuppressLint("CheckResult")
+    public void logOut() {
+        // 未登录状态
+        if (! SharePreferenceUtil.hasObj(Constant.ME_INFO)) return;
+
+        // 加载中
+        Resource currentState = state.getValue();
+        if (currentState != null && currentState.getState() == UIState.LOADING) {
+            return;
+        }
+
+        state.setValue(Resource.loading());
+
+         disposable.add(
+            repository.logOut()
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(resp -> {
+                        if (resp.isSuccess()) {
+                            SharePreferenceUtil.remove(Constant.ME_INFO);
+                            SharePreferenceUtil.remove(okhttp3.HttpUrl.parse(Constant.BASE_URL).host()); // cookie 的key就是域名
+                            state.setValue(Resource.success("退出登录"));
+                            meInfo.setValue(null);
+                        } else {
+                            LogUtil.error(MeViewModel.class, "退出登录失败：" + resp.getErrorMsg());
+                            state.setValue(Resource.error(resp.getErrorMsg()));
+                        }
+                    }, throwable -> {
+                        LogUtil.error(MeViewModel.class, "网络请求错误：" + throwable.getMessage());
+                        state.setValue(Resource.error(throwable.getMessage()));
+                    })
+         );
+    }
+
+
+    @Override
+    protected void onCleared() {
+        super.onCleared();
+        disposable.clear();
+
+    }
 }

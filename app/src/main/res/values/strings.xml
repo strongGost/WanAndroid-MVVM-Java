@@ -27,5 +27,10 @@
     <string name="clean_cache">clean_cache</string>
     <string name="log_out">Log out</string>
     <string name="my_score_text">my score</string>
+    <string name="clear_cache">clear cache</string>
+    <string name="clear_cache_content">whether to clear the cache?</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="clear_loading">Cleaning up cache. Please wait...</string>
 
 </resources>

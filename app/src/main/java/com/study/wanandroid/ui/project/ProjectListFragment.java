@@ -31,6 +31,9 @@ import com.study.wanandroid.ui.project.adaper.ProjectListAdapter;
 import com.study.wanandroid.utils.Constant;
 import com.study.wanandroid.utils.ToastUtil;
 
+import java.util.List;
+import java.util.Objects;
+
 public class ProjectListFragment extends BaseFragment<FragmentProjectListBinding> implements BaseQuickAdapter.OnItemClickListener<ArticleBean> {
 
     private ProjectListViewModel viewModel;
@@ -134,6 +137,17 @@ public class ProjectListFragment extends BaseFragment<FragmentProjectListBinding
             if (resource.getState() == UIState.NEED_LOGIN) {    // 需要登录
                 Intent intent = new Intent(requireContext(), LoginActivity.class);
                 startActivity(intent);
+            }
+        });
+        collectViewModel.getCollectedChanged().observe(getViewLifecycleOwner(), article -> {
+            if (article != null) {
+                List<ArticleBean> items = adapter.getItems();
+                for (int i = 0; i < items.size(); i ++) {
+                    if (Objects.equals(items.get(i).getUniqueId(), article.getUniqueId())) {
+                        adapter.notifyItemChanged(i);
+                        break;
+                    }
+                }
             }
         });
     }

@@ -11,4 +11,6 @@ public interface MeService {
     @GET("user/lg/userinfo/json")
     Observable<ResponseBean<MeInfo>>getMeInfo();
 
+    @GET("user/logout/json")
+    Observable<ResponseBean<Object>> logOut();
 }

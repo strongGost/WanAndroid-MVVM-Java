@@ -31,4 +31,7 @@ public class MeRepository extends BaseRepository {
         return service.getMeInfo();
     }
 
+    public Observable<ResponseBean<Object>> logOut() {
+        return service.logOut();
+    }
 }

@@ -27,10 +27,7 @@ public abstract class BaseViewModel extends ViewModel {
     @Override
     protected void onCleared() {
         super.onCleared();
-        if (disposable != null && !disposable.isDisposed()) {
-            disposable.dispose();
-            disposable.clear();
-        }
+        disposable.clear();
 
     }
 

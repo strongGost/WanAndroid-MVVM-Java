@@ -24,7 +24,7 @@ public class RetrofitClient {
                 .connectTimeout(10, TimeUnit.SECONDS)
                 .readTimeout(10, TimeUnit.SECONDS)
                 .addNetworkInterceptor(loggingInterceptor)
-                .cookieJar(new WanCookieJar())
+                .cookieJar(new WanCookieJar())  // 管理 Cookie
                 .build();
 
         retrofit = new Retrofit.Builder()
