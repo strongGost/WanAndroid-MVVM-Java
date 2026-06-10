@@ -51,10 +51,6 @@ public class MeFragment extends BaseFragment<FragmentMeBinding> {
     protected void initViews() {
         // 状态栏文字设为浅色
         MyApplication.updateStatusBarTextColor(requireActivity(), false);
-        binding.headerLayout.tvAccount.setOnClickListener(v -> {
-            Intent intent = new Intent(requireContext(), LoginActivity.class);
-            startActivity(intent);
-        });
 
         binding.ivIcon.setOnClickListener(v -> goToActivity(0));
         binding.tvMyScore.setOnClickListener(v -> goToActivity(0));
@@ -72,13 +68,20 @@ public class MeFragment extends BaseFragment<FragmentMeBinding> {
         binding.tvCacheSize.setOnClickListener(v -> showDialog());
         binding.ivGithub.setOnClickListener(v -> showDialog());
 
-        // 退出登录
-        binding.tvLogout.setOnClickListener(v -> viewModel.logOut());
+        // 退出登录 or 退出登录
+        binding.tvLogout.setOnClickListener(v -> {
+            if (getString(R.string.login).contentEquals(binding.tvLogout.getText())) {
+                Intent intent = new Intent(requireContext(), LoginActivity.class);
+                startActivity(intent);
+            } else {
+                viewModel.logOut();
+            }
+        });
     }
 
 
     /**
-     * 去积分页面
+     * 去相应页面
      */
     private void goToActivity(int pos) {
         // 未登录状态：跳转到登录页面
@@ -102,6 +105,12 @@ public class MeFragment extends BaseFragment<FragmentMeBinding> {
         if (intent != null) {
             startActivity(intent);
         }
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        viewModel.getMeData();  // 如果用户登录后，需要刷新用户信息
     }
 
 
@@ -155,7 +164,16 @@ public class MeFragment extends BaseFragment<FragmentMeBinding> {
             }
         });
         viewModel.getMeInfo().observe(getViewLifecycleOwner(), data -> {
-            if(data == null) return;
+            binding.tvLogout.setText(data == null ? R.string.login : R.string.log_out);
+            if(data == null) {
+                binding.headerLayout.tvAccount.setText(R.string.text_out_login);
+                binding.headerLayout.tvId.setText("");
+                binding.headerLayout.tvLevel.setText("");
+                binding.headerLayout.tvLevel.setVisibility(View.GONE);
+                binding.headerLayout.tvId.setVisibility(View.GONE);
+                binding.tvNowScore.setText("");
+                return;
+            }
             score = data.getUserInfo().getCoinCount();
             binding.headerLayout.tvAccount.setText(data.getUserInfo().getUsername());
             binding.headerLayout.tvId.setText(String.format("ID.%d", data.getUserInfo().getId()));

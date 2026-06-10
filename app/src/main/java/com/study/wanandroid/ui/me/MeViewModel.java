@@ -105,6 +105,8 @@ public class MeViewModel extends AndroidViewModel {
         MeInfo localData = SharePreferenceUtil.getObj(Constant.ME_INFO, MeInfo.class);
         if (localData != null) {
             meInfo.setValue(localData);
+        } else {
+            meInfo.setValue(null);  // 未登录时也要触发 observer，让 UI 刷新为未登录状态
         }
         // 再网络
         state.setValue(Resource.loading());
