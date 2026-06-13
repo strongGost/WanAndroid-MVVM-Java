@@ -2,19 +2,13 @@ package com.study.wanandroid.ui.me;
 
 import android.annotation.SuppressLint;
 import android.app.Application;
-import android.content.Context;
-import android.support.v4.os.IResultReceiver;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.ViewModel;
 
-import com.study.wanandroid.base.BaseViewModel;
 import com.study.wanandroid.data.model.MeInfo;
-import com.study.wanandroid.data.model.UserBean;
 import com.study.wanandroid.data.remote.Event;
 import com.study.wanandroid.data.remote.Resource;
 import com.study.wanandroid.data.remote.UIState;
@@ -25,13 +19,9 @@ import com.study.wanandroid.utils.Constant;
 import com.study.wanandroid.utils.LogUtil;
 import com.study.wanandroid.utils.SharePreferenceUtil;
 
-import java.util.Objects;
-
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
-import io.reactivex.rxjava3.core.Scheduler;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
-import okhttp3.Cache;
 
 public class MeViewModel extends AndroidViewModel {
     private final MeRepository repository = MeRepository.getInstance();
@@ -112,22 +102,22 @@ public class MeViewModel extends AndroidViewModel {
         state.setValue(Resource.loading());
         disposable.add(
                 repository.getMeInfo()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(response -> {
-                    if (response.isSuccess()) {
-                        /* 响应成功，更新 sp 文件的个人信息 */
-                        state.setValue(Resource.success(""));
-                        meInfo.setValue(response.getData());
-                        SharePreferenceUtil.saveTo(Constant.ME_INFO, response.getData());
-                    } else {
-                        state.setValue(Resource.error(response.getErrorMsg()));
-                        LogUtil.error(MeViewModel.class, "状态码错误：" + response.getErrorCode() + "data: " + response.getErrorMsg());
-                    }
-                }, throwable -> {
-                    state.setValue(Resource.error(throwable.getMessage()));
-                    LogUtil.error(MeViewModel.class, "请求发送失败：" + throwable.getMessage());
-                })
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(response -> {
+                            if (response.isSuccess()) {
+                                /* 响应成功，更新 sp 文件的个人信息 */
+                                state.setValue(Resource.success(""));
+                                meInfo.setValue(response.getData());
+                                SharePreferenceUtil.saveTo(Constant.ME_INFO, response.getData());
+                            } else {
+                                state.setValue(Resource.error(response.getErrorMsg()));
+                                LogUtil.error(MeViewModel.class, "状态码错误：" + response.getErrorCode() + "data: " + response.getErrorMsg());
+                            }
+                        }, throwable -> {
+                            state.setValue(Resource.error(throwable.getMessage()));
+                            LogUtil.error(MeViewModel.class, "请求发送失败：" + throwable.getMessage());
+                        })
         );
     }
 
@@ -138,7 +128,7 @@ public class MeViewModel extends AndroidViewModel {
     @SuppressLint("CheckResult")
     public void logOut() {
         // 未登录状态
-        if (! SharePreferenceUtil.hasObj(Constant.ME_INFO)) return;
+        if (!SharePreferenceUtil.hasObj(Constant.ME_INFO)) return;
 
         // 加载中
         Resource currentState = state.getValue();
@@ -148,25 +138,25 @@ public class MeViewModel extends AndroidViewModel {
 
         state.setValue(Resource.loading());
 
-         disposable.add(
-            repository.logOut()
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(resp -> {
-                        if (resp.isSuccess()) {
-                            SharePreferenceUtil.remove(Constant.ME_INFO);
-                            SharePreferenceUtil.remove(okhttp3.HttpUrl.parse(Constant.BASE_URL).host()); // cookie 的key就是域名
-                            state.setValue(Resource.success("退出登录"));
-                            meInfo.setValue(null);
-                        } else {
-                            LogUtil.error(MeViewModel.class, "退出登录失败：" + resp.getErrorMsg());
-                            state.setValue(Resource.error(resp.getErrorMsg()));
-                        }
-                    }, throwable -> {
-                        LogUtil.error(MeViewModel.class, "网络请求错误：" + throwable.getMessage());
-                        state.setValue(Resource.error(throwable.getMessage()));
-                    })
-         );
+        disposable.add(
+                repository.logOut()
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(resp -> {
+                            if (resp.isSuccess()) {
+                                SharePreferenceUtil.remove(Constant.ME_INFO);
+                                SharePreferenceUtil.remove(okhttp3.HttpUrl.parse(Constant.BASE_URL).host()); // cookie 的key就是域名
+                                state.setValue(Resource.success("退出登录"));
+                                meInfo.setValue(null);
+                            } else {
+                                LogUtil.error(MeViewModel.class, "退出登录失败：" + resp.getErrorMsg());
+                                state.setValue(Resource.error(resp.getErrorMsg()));
+                            }
+                        }, throwable -> {
+                            LogUtil.error(MeViewModel.class, "网络请求错误：" + throwable.getMessage());
+                            state.setValue(Resource.error(throwable.getMessage()));
+                        })
+        );
     }
 
 

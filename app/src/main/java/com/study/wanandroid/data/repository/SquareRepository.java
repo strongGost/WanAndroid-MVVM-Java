@@ -1,5 +1,6 @@
 package com.study.wanandroid.data.repository;
 
+import com.study.wanandroid.base.BaseRepository;
 import com.study.wanandroid.data.model.GuideBean;
 import com.study.wanandroid.data.model.ResponseBean;
 import com.study.wanandroid.data.model.SystemBean;
@@ -10,7 +11,7 @@ import java.util.List;
 
 import io.reactivex.rxjava3.core.Observable;
 
-public class SquareRepository {
+public class SquareRepository extends BaseRepository {
     private static SquareRepository instance;
     private final SquareService service;
 

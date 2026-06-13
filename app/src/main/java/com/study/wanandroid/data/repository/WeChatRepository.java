@@ -1,5 +1,6 @@
 package com.study.wanandroid.data.repository;
 
+import com.study.wanandroid.base.BaseRepository;
 import com.study.wanandroid.data.model.ArticleBean;
 import com.study.wanandroid.data.model.PageDataBean;
 import com.study.wanandroid.data.model.ResponseBean;
@@ -11,7 +12,7 @@ import java.util.List;
 
 import io.reactivex.rxjava3.core.Observable;
 
-public class WeChatRepository {
+public class WeChatRepository extends BaseRepository {
     private static volatile WeChatRepository instance;
     private final WeChatService service;
 

@@ -187,12 +187,12 @@
             android:maxLines="1"
             android:text="0MB"
             app:layout_constraintBottom_toBottomOf="@id/tv_clean_cache"
-            app:layout_constraintEnd_toStartOf="@id/iv_github"
+            app:layout_constraintEnd_toStartOf="@id/iv_clear"
             app:layout_constraintStart_toEndOf="@id/tv_clean_cache"
             app:layout_constraintTop_toTopOf="@id/tv_clean_cache" />
 
         <ImageView
-            android:id="@+id/iv_github"
+            android:id="@+id/iv_clear"
             android:layout_width="50dp"
             android:layout_height="0dp"
             android:padding="6dp"

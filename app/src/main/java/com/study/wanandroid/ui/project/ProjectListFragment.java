@@ -4,29 +4,26 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
-import com.chad.library.adapter4.BaseQuickAdapter;
 import com.scwang.smart.refresh.layout.api.RefreshLayout;
 import com.scwang.smart.refresh.layout.listener.OnLoadMoreListener;
 import com.scwang.smart.refresh.layout.listener.OnRefreshListener;
 import com.study.wanandroid.R;
 import com.study.wanandroid.base.BaseFragment;
+import com.study.wanandroid.data.model.ArticleBean;
 import com.study.wanandroid.data.model.IBaseArticle;
 import com.study.wanandroid.data.remote.Resource;
-import com.study.wanandroid.ui.me.college.CollectViewModel;
-import com.study.wanandroid.data.model.ArticleBean;
 import com.study.wanandroid.data.remote.UIState;
 import com.study.wanandroid.databinding.FragmentProjectListBinding;
 import com.study.wanandroid.ui.WebViewActivity;
 import com.study.wanandroid.ui.login.LoginActivity;
+import com.study.wanandroid.ui.me.college.CollectViewModel;
 import com.study.wanandroid.ui.project.adaper.ProjectListAdapter;
 import com.study.wanandroid.utils.Constant;
 import com.study.wanandroid.utils.ToastUtil;
@@ -34,7 +31,7 @@ import com.study.wanandroid.utils.ToastUtil;
 import java.util.List;
 import java.util.Objects;
 
-public class ProjectListFragment extends BaseFragment<FragmentProjectListBinding> implements BaseQuickAdapter.OnItemClickListener<ArticleBean> {
+public class ProjectListFragment extends BaseFragment<FragmentProjectListBinding> {
 
     private ProjectListViewModel viewModel;
     private ProjectListAdapter adapter;
@@ -52,7 +49,7 @@ public class ProjectListFragment extends BaseFragment<FragmentProjectListBinding
     private void initRecycleView() {
         binding.recycleList.setLayoutManager(new LinearLayoutManager(requireContext()));
         adapter = new ProjectListAdapter();
-        adapter.setOnItemClickListener(this);
+//        adapter.setOnItemClickListener(this);
         binding.recycleList.setAdapter(adapter);
         binding.recycleList.addItemDecoration(new DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL));
 
@@ -158,6 +155,7 @@ public class ProjectListFragment extends BaseFragment<FragmentProjectListBinding
     }
 
 
+/*
     @Override
     public void onClick(@NonNull BaseQuickAdapter<ArticleBean, ?> baseQuickAdapter, @NonNull View view, int i) {
         ArticleBean item = adapter.getItem(i);
@@ -165,5 +163,6 @@ public class ProjectListFragment extends BaseFragment<FragmentProjectListBinding
                 .putExtra(Constant.EXTRA_URL, item.getLink());
         startActivity(intent);
     }
+*/
 
 }

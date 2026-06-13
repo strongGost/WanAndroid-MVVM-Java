@@ -32,6 +32,10 @@
     <string name="yes">Yes</string>
     <string name="no">No</string>
     <string name="clear_loading">Cleaning up cache. Please wait...</string>
+    <string name="add_title_hint">文章标题(100字以内)</string>
+    <string name="article_title">文章标题</string>
+    <string name="article_link">文章链接</string>
+    <string name="link_eg">如 http://wanandroid.com/blog/show/2577</string>
 
 
 </resources>

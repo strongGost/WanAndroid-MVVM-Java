@@ -39,7 +39,7 @@ public class LogUtil {
 
 
     private static boolean isShow(int level) {
-        return CUR_LEVEL >= level ? true : false;
+        return CUR_LEVEL >= level;
     }
 
 }

@@ -32,6 +32,7 @@ import com.study.wanandroid.databinding.FragmentSystemBinding;
 import com.study.wanandroid.ui.login.LoginActivity;
 import com.study.wanandroid.ui.me.college.CollegeActivity;
 import com.study.wanandroid.ui.me.score.ScoreActivity;
+import com.study.wanandroid.ui.me.share.ShareActivity;
 import com.study.wanandroid.utils.Constant;
 import com.study.wanandroid.utils.SharePreferenceUtil;
 import com.study.wanandroid.utils.ToastUtil;
@@ -66,7 +67,7 @@ public class MeFragment extends BaseFragment<FragmentMeBinding> {
         binding.ivShare.setOnClickListener(v -> goToActivity(2));
 
         binding.tvCacheSize.setOnClickListener(v -> showDialog());
-        binding.ivGithub.setOnClickListener(v -> showDialog());
+        binding.ivClear.setOnClickListener(v -> showDialog());
 
         // 退出登录 or 退出登录
         binding.tvLogout.setOnClickListener(v -> {
@@ -100,6 +101,7 @@ public class MeFragment extends BaseFragment<FragmentMeBinding> {
                 intent = new Intent(requireContext(), CollegeActivity.class);
                 break;
             case 2: // 分享页面
+                intent = new Intent(requireContext(), ShareActivity.class);
                 break;
         }
         if (intent != null) {

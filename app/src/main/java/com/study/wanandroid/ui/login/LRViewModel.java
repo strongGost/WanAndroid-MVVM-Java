@@ -57,7 +57,7 @@ public class LRViewModel extends BaseViewModel {
                                 states.setValue(Resource.success("登录成功"));
                                 userInfo.setValue(response.getData());
                                 /* 当前用户信息保存到 SharePreference */
-//                                SharePreferenceUtil.saveTo(Constant.ME_INFO, response.getData());
+                                SharePreferenceUtil.saveTo(Constant.ME_INFO, response.getData());
                             } else {
                                 states.setValue(Resource.error(response.getErrorMsg()));
                             }

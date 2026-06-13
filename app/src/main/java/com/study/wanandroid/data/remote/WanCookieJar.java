@@ -64,10 +64,4 @@ public class WanCookieJar implements CookieJar {
         return cookies;
     }
 
-    /**
-     * 清除当前 host 对应的 Cookie
-     */
-    public void clear(HttpUrl httpUrl) {
-        SharePreferenceUtil.remove(httpUrl.host());
-    }
 }

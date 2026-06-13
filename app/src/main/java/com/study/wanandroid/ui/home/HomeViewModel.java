@@ -3,7 +3,6 @@ package com.study.wanandroid.ui.home;
 import android.annotation.SuppressLint;
 import android.util.Log;
 
-import androidx.collection.MutableObjectList;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
@@ -22,7 +21,6 @@ import java.util.Objects;
 
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.core.Observable;
-import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 
 public class HomeViewModel extends BaseViewModel {
@@ -152,7 +150,7 @@ public class HomeViewModel extends BaseViewModel {
      */
     public void loadMore() {
         loadMoreState.setValue(Resource.loading());
-        if (pageData.getCurPage() >= pageData.getPageCount()) {
+        if (pageData == null || pageData.getCurPage() >= pageData.getPageCount()) {
             updateStatus(Resource.none());
             return;
         }
@@ -181,19 +179,18 @@ public class HomeViewModel extends BaseViewModel {
      * 首次加载
      */
     public void firstLoad() {
-        // ViewModel 的作用域是 HomeFragment，所以去到其它 Tab 时，ViewModel 没有销毁，再次进入会造成数据重复叠加
-        // 所以先判断，当然也可以先清空
-        if (allArticles.isEmpty()) {
-            pageState.setValue(Resource.loading());
-            getBannerTopAndArticle();
-        }
+        // HomeViewModel 的作用域是 HomeFragment，所以去到其它 Tab 时，AddShareViewModel 没有销毁，再次进入会造成数据重复叠加
+        // 先清空
+        allArticles.clear();
+        pageState.setValue(Resource.loading());
+        getBannerTopAndArticle();
     }
 
     /**
      * 刷新页面
      */
     public void refresh() {
-        // 如果用户确定刷新，此时应取消其它请求（如加载更多）
+        // 刷新时应取消其它请求（如加载更多）
         if (disposable != null) {
             disposable.clear();
         }

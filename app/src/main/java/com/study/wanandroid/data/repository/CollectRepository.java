@@ -34,18 +34,19 @@ public class CollectRepository extends BaseRepository {
         return service.getCollegeArticles(page);
     };
 
-    public Observable<ResponseBean<String>> collect(int id) {
+    public Observable<ResponseBean<Object>> collect(int id) {
         return service.collect(id);
-    };
+    }
 
-    public Observable<ResponseBean<String>> collect(String title, String author, String link) {
+    public Observable<ResponseBean<Object>> collect(String title, String author, String link) {
         return service.collect(title, author, link);
     }
-    public Observable<ResponseBean<String>> unCollect(int id) {
-        return service.unCollect(id);
-    };
 
-    public Observable<ResponseBean<String>> unCollect(int id, int originId) {
+    public Observable<ResponseBean<Object>> unCollect(int id) {
+        return service.unCollect(id);
+    }
+
+    public Observable<ResponseBean<Object>> unCollect(int id, int originId) {
         return service.unCollect(id, originId);
     }
 }

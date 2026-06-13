@@ -17,6 +17,12 @@
         android:theme="@style/Theme.WanAndroidMVVM"
         tools:targetApi="31">
         <activity
+            android:name=".ui.me.share.AddShareActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.me.share.ShareActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.me.college.CollegeActivity"
             android:exported="false" />
         <activity
