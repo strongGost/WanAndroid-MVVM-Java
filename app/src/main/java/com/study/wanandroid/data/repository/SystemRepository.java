@@ -11,6 +11,10 @@ import java.util.List;
 
 import io.reactivex.rxjava3.core.Observable;
 
+
+/**
+ * wechat
+ */
 public class SystemRepository extends BaseRepository {
     private static volatile SystemRepository instance;
     private final SystemService service;

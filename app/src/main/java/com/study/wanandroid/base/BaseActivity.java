@@ -1,18 +1,14 @@
 package com.study.wanandroid.base;
 
 import android.os.Bundle;
-import android.os.PersistableBundle;
 
 import androidx.activity.EdgeToEdge;
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 import androidx.viewbinding.ViewBinding;
 
-import com.study.wanandroid.R;
+import com.study.wanandroid.utils.NetWorkUtil;
+import com.study.wanandroid.utils.ToastUtil;
 
 public abstract class BaseActivity<VB extends ViewBinding> extends AppCompatActivity {
     protected VB binding;
@@ -23,6 +19,9 @@ public abstract class BaseActivity<VB extends ViewBinding> extends AppCompatActi
         this.binding = getViewBinding();
         setContentView(binding.getRoot());
         EdgeToEdge.enable(this);
+
+        if (!NetWorkUtil.isOnline(this))
+            ToastUtil.show(this, "当前网络不可用");
 
         // 初始化
         initViewModel();

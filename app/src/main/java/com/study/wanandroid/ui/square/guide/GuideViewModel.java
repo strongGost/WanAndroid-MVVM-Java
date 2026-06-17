@@ -7,23 +7,29 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.study.wanandroid.base.BaseViewModel;
 import com.study.wanandroid.data.model.GuideBean;
+import com.study.wanandroid.data.model.SystemBean;
 import com.study.wanandroid.data.remote.Resource;
 import com.study.wanandroid.data.remote.UIState;
 import com.study.wanandroid.data.repository.SquareRepository;
+import com.study.wanandroid.ui.square.system.SystemViewModel;
 import com.study.wanandroid.utils.LogUtil;
 
 import java.util.List;
 
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.core.Completable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 
 public class GuideViewModel extends BaseViewModel {
     private SquareRepository repository;
     private MutableLiveData<Resource> networkStatus = new MutableLiveData<>();
     private MutableLiveData<List<GuideBean>> guides = new MutableLiveData<>();
+    /** 数据库是否已响应，用于防止网络错误在缓存查询完成前抢先设置 error 状态 */
+    private boolean databaseResponded = false;
+
     public GuideViewModel() {
         repository = SquareRepository.getInstance();
-        getGuidesData();
+        observableDatabase();
     }
 
     public LiveData<Resource> getNetworkStatus() {
@@ -34,34 +40,86 @@ public class GuideViewModel extends BaseViewModel {
         return guides;
     }
 
+
+    /**
+     * 订阅数据库
+     */
+    private void observableDatabase() {
+        addDatabaseDisposable(
+                repository.getCacheGuideData()
+                        .replay(1)
+                        .refCount()
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(resp -> {
+                            databaseResponded = true;
+                            if (resp != null) {
+                                List<GuideBean> data = resp.getData();
+                                if (data != null && !data.isEmpty()) {   // 有缓存
+                                    guides.setValue(data);
+                                    networkStatus.setValue(Resource.success(""));
+                                } else {
+                                    // 缓存为空或无意义（size=0），显示 loading
+                                    networkStatus.setValue(Resource.loading());
+                                }
+                            } else {
+                                networkStatus.setValue(Resource.loading());
+                            }
+                        }, throwable -> {
+                            databaseResponded = true;
+                            LogUtil.error(GuideViewModel.class, "guide 数据库监听异常：" + throwable.getMessage());
+                        })
+        );
+
+    }
+
+    private boolean isLoading() {
+        return networkStatus.getValue() != null && networkStatus.getValue().getState() == UIState.LOADING;
+    }
+
+
     @SuppressLint("CheckResult")
     public void getGuidesData() {
-        if (networkStatus.getValue() != null && networkStatus.getValue().getState() == UIState.LOADING) {
-            return;
+        if (isLoading()) return;
+
+        // 当前无数据显示时，先展示 loading 状态，避免网络请求期间出现空白
+        if (guides.getValue() == null || guides.getValue().isEmpty()) {
+            networkStatus.setValue(Resource.loading());
         }
-        networkStatus.setValue(Resource.loading());
+
         addDisposable(
             repository.getGuideData()
-                    .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(response -> {
-                                if (response.isSuccess()) {
-                                    List<GuideBean> data = response.getData();
-                                    LogUtil.error(GuideViewModel.class, "请求响应成功，is null：" + (data == null) + " 数据大小" + (data.size()));
-                                    if (data == null || data.isEmpty()) {
-                                        networkStatus.setValue(Resource.none());
-                                    } else {
-                                        networkStatus.setValue(Resource.success(""));
-                                    }
-                                    guides.setValue(data);
-                                } else {
-                                    networkStatus.setValue(Resource.error(response.getErrorMsg()));
-                                }
-                            },
-                            throwable -> {
-                                networkStatus.setValue(Resource.error(throwable.getMessage()));
-                                LogUtil.error(GuideViewModel.class, "数据获取失败：" + throwable.getMessage());
-                            })
+                    .doOnNext(resp -> {
+                        /* 避免 网络先执行完毕后 再数据库执行赋值造成的 ui 闪烁 */
+                        if (resp != null && resp.getData() != null) {
+                            guides.setValue(resp.getData());
+                            networkStatus.setValue(Resource.success(""));
+                        }
+                    })
+                    .observeOn(Schedulers.io())
+                    .flatMapCompletable(resp -> {   // 缓存到数据库
+                        if (resp != null) {
+                            List<GuideBean> data = resp.getData();
+                            if (data != null) return repository.cacheGuideData(data);
+                        }
+                        return Completable.complete();
+                    })
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(() -> {
+                        if (guides.getValue() != null && !guides.getValue().isEmpty())
+                            networkStatus.setValue(Resource.success(""));
+                        else networkStatus.setValue(Resource.none());
+                    }, throwable -> {
+                        // 数据库尚未响应，缓存数据可能还在路上，不抢先设置状态，交给 observableDatabase 回调决定
+                        if (!databaseResponded) return;
+
+                        // 有缓存，页面状态为 success 即还是显示内容布局，否则 ui 将会改变
+                        if (guides != null && guides.getValue() != null && !guides.getValue().isEmpty())
+                            networkStatus.setValue(Resource.success("无网络"));
+                        else
+                            networkStatus.setValue(Resource.error(throwable.getMessage()));
+                        LogUtil.error(GuideViewModel.class, "数据获取失败：" + throwable.getMessage());
+                    })
         );
     }
 

@@ -8,6 +8,7 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
+import com.study.wanandroid.data.local.AppDatabase;
 import com.study.wanandroid.data.model.MeInfo;
 import com.study.wanandroid.data.remote.Event;
 import com.study.wanandroid.data.remote.Resource;
@@ -106,13 +107,19 @@ public class MeViewModel extends AndroidViewModel {
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(response -> {
                             if (response.isSuccess()) {
-                                /* 响应成功，更新 sp 文件的个人信息 */
                                 state.setValue(Resource.success(""));
                                 meInfo.setValue(response.getData());
                                 SharePreferenceUtil.saveTo(Constant.ME_INFO, response.getData());
+                            } else if (response.isOutLogin()) {
+                                // Cookie 过期 / 未登录：清除本地数据 + 清 Room 缓存
+                                SharePreferenceUtil.remove(Constant.ME_INFO);
+                                SharePreferenceUtil.remove(okhttp3.HttpUrl.parse(Constant.BASE_URL).host());
+                                meInfo.setValue(null);
+                                AppDatabase.getInstance(getApplication()).clearAllCaches().subscribe();
+                                state.setValue(Resource.outLogin());
                             } else {
                                 state.setValue(Resource.error(response.getErrorMsg()));
-                                LogUtil.error(MeViewModel.class, "状态码错误：" + response.getErrorCode() + "data: " + response.getErrorMsg());
+                                LogUtil.error(MeViewModel.class, "状态码错误：" + response.getErrorCode());
                             }
                         }, throwable -> {
                             state.setValue(Resource.error(throwable.getMessage()));
@@ -145,7 +152,8 @@ public class MeViewModel extends AndroidViewModel {
                         .subscribe(resp -> {
                             if (resp.isSuccess()) {
                                 SharePreferenceUtil.remove(Constant.ME_INFO);
-                                SharePreferenceUtil.remove(okhttp3.HttpUrl.parse(Constant.BASE_URL).host()); // cookie 的key就是域名
+                                SharePreferenceUtil.remove(okhttp3.HttpUrl.parse(Constant.BASE_URL).host());
+                                AppDatabase.getInstance(getApplication()).clearAllCaches().subscribe();
                                 state.setValue(Resource.success("退出登录"));
                                 meInfo.setValue(null);
                             } else {

@@ -83,7 +83,7 @@ public class ShareActivity extends BaseActivity<ActivityShareBinding> {
 
             @Override
             public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
-                int pos = viewHolder.getBindingAdapterPosition();
+                int pos = viewHolder.getBindingAdapterPosition();   // 该条目在 adapter 中的位置
                 ArticleBean item = adapter.getItem(pos);
                 // 乐观删除：先从 UI 移除
                 adapter.removeAt(pos);
@@ -120,7 +120,7 @@ public class ShareActivity extends BaseActivity<ActivityShareBinding> {
             if (resource != null) {
                 UIState state = resource.getState();
                 if (state == UIState.EMPTY) binding.smart.finishLoadMoreWithNoMoreData();
-                else if (state != UIState.LOADING) binding.smart.finishLoadMore(state == UIState.ERROR);
+                else if (state != UIState.LOADING) binding.smart.finishLoadMore(state != UIState.ERROR);
             }
         });
         viewModel.getArticles().observe(this, data -> {

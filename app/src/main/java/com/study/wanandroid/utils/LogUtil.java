@@ -26,14 +26,14 @@ public class LogUtil {
 
     public static <T> void warn (Class<T> c, String msg) {
             if (isShow(WARN_LEVEL)) {
-                Log.i(c.getSimpleName(), msg);
+                Log.w(c.getSimpleName(), msg);
             }
         }
 
 
     public static <T> void error (Class<T> c, String msg) {
             if (isShow(ERROR_LEVEL)) {
-                Log.i(c.getSimpleName(), msg);
+                Log.e(c.getSimpleName(), msg);
             }
         }
 

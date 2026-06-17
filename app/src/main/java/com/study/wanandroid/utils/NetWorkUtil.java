@@ -22,7 +22,7 @@ public class NetWorkUtil {
         if (networkInfo != null && networkInfo.isAvailable()) {
             return true;
         } else {
-            ToastUtil.show(context, "Network unavailable");
+            ToastUtil.show(context, "当前网络不可用");
             return false;
         }
     }

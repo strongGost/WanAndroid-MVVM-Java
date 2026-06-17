@@ -22,6 +22,8 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.study.wanandroid.R;
 import com.study.wanandroid.base.BaseActivity;
 import com.study.wanandroid.databinding.ActivityMainBinding;
+import com.study.wanandroid.utils.NetWorkUtil;
+import com.study.wanandroid.utils.ToastUtil;
 
 public class MainActivity extends BaseActivity<ActivityMainBinding> {
 

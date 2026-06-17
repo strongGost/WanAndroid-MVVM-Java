@@ -1,0 +1,221 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 1,
+    "identityHash": "d3c3320c1cfb780ee11af1a81122dc8f",
+    "entities": [
+      {
+        "tableName": "articles",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `title` TEXT, `author` TEXT, `super_chapter_name` TEXT, `chapter_name` TEXT, `link` TEXT, `nice_date` TEXT, `collect` INTEGER NOT NULL, `fresh` INTEGER NOT NULL, `type` INTEGER NOT NULL, `category` TEXT NOT NULL, `page` INTEGER NOT NULL, PRIMARY KEY(`id`, `category`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "title",
+            "columnName": "title",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "author",
+            "columnName": "author",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "superChapterName",
+            "columnName": "super_chapter_name",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "chapterName",
+            "columnName": "chapter_name",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "link",
+            "columnName": "link",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "niceDate",
+            "columnName": "nice_date",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "collect",
+            "columnName": "collect",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "fresh",
+            "columnName": "fresh",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "type",
+            "columnName": "type",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "category",
+            "columnName": "category",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "page",
+            "columnName": "page",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id",
+            "category"
+          ]
+        }
+      },
+      {
+        "tableName": "system",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `category` TEXT NOT NULL, `author` TEXT, `courseId` INTEGER NOT NULL, `cover` TEXT, `desc` TEXT, `lisense` TEXT, `lisense_link` TEXT, `name` TEXT, `order` INTEGER NOT NULL, `parent_chapter_id` INTEGER NOT NULL, `type` INTEGER NOT NULL, `user_control_set_top` INTEGER NOT NULL, `visible` INTEGER NOT NULL, `articleList` TEXT, `children` TEXT, PRIMARY KEY(`id`, `category`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "category",
+            "columnName": "category",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "author",
+            "columnName": "author",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "courseId",
+            "columnName": "courseId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "cover",
+            "columnName": "cover",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "desc",
+            "columnName": "desc",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "lisense",
+            "columnName": "lisense",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "lisenseLink",
+            "columnName": "lisense_link",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "order",
+            "columnName": "order",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "parentChapterId",
+            "columnName": "parent_chapter_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "type",
+            "columnName": "type",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "userControlSetTop",
+            "columnName": "user_control_set_top",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "visible",
+            "columnName": "visible",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "articleList",
+            "columnName": "articleList",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "children",
+            "columnName": "children",
+            "affinity": "TEXT"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id",
+            "category"
+          ]
+        }
+      },
+      {
+        "tableName": "guide",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`cid` INTEGER NOT NULL, `name` TEXT, `articles` TEXT, PRIMARY KEY(`cid`))",
+        "fields": [
+          {
+            "fieldPath": "cid",
+            "columnName": "cid",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "articles",
+            "columnName": "articles",
+            "affinity": "TEXT"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "cid"
+          ]
+        }
+      }
+    ],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'd3c3320c1cfb780ee11af1a81122dc8f')"
+    ]
+  }
+}

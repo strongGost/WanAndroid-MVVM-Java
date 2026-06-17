@@ -4,6 +4,8 @@ import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.DiffUtil;
+import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.flexbox.FlexDirection;
@@ -14,21 +16,17 @@ import com.study.wanandroid.data.model.GuideBean;
 import com.study.wanandroid.data.model.SystemBean;
 import com.study.wanandroid.databinding.ItemLabelBinding;
 
-import java.util.List;
-
 /**
  * label 列表 adapter
  *
  * @param <T>
  */
-public class LabelClassfiyAdapter<T> extends RecyclerView.Adapter<LabelClassfiyAdapter.VH> {
+public class LabelClassfiyAdapter<T> extends ListAdapter<T, LabelClassfiyAdapter.VH> {
 
-    private List<T> data;
     private OnLabelClickListener listener;
 
-    public void setData(List<T> data) {
-        this.data = data;
-        notifyDataSetChanged();
+    public LabelClassfiyAdapter(@NonNull DiffUtil.ItemCallback<T> diffCallback) {
+        super(diffCallback);
     }
 
     public void setListener(OnLabelClickListener listener) {
@@ -43,12 +41,7 @@ public class LabelClassfiyAdapter<T> extends RecyclerView.Adapter<LabelClassfiyA
 
     @Override
     public void onBindViewHolder(@NonNull VH holder, int position) {
-        holder.bindTo(holder, listener,  data.get(position), position);
-    }
-
-    @Override
-    public int getItemCount() {
-        return data == null ? 0 : data.size();
+        holder.bindTo(holder, listener, getItem(position), position);
     }
 
 

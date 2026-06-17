@@ -4,11 +4,14 @@ import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
+
+import androidx.recyclerview.widget.DiffUtil;
 
 import com.study.wanandroid.base.BaseFragment;
 import com.study.wanandroid.data.model.SystemBean;
@@ -37,14 +40,24 @@ public class SystemFragment extends BaseFragment<FragmentSystemBinding> implemen
             binding.stateLayout.switchView(resource.getState());
         });
         viewModel.getSystems().observe(getViewLifecycleOwner(), systems -> {
-            adapter.setData(systems);
+            adapter.submitList(systems);
         });
     }
 
     @Override
     protected void initViews() {
         binding.recycleContent.setLayoutManager(new LinearLayoutManager(requireContext()));
-        adapter = new LabelClassfiyAdapter<SystemBean>();
+        adapter = new LabelClassfiyAdapter<SystemBean>(new DiffUtil.ItemCallback<SystemBean>() {
+            @Override
+            public boolean areItemsTheSame(@NonNull SystemBean oldItem, @NonNull SystemBean newItem) {
+                return oldItem.getId() == newItem.getId();
+            }
+
+            @Override
+            public boolean areContentsTheSame(@NonNull SystemBean oldItem, @NonNull SystemBean newItem) {
+                return oldItem.equals(newItem);
+            }
+        });
         adapter.setListener(this);  // 点击事件
         binding.recycleContent.setAdapter(adapter);
         binding.stateLayout.setListener(() -> viewModel.onRetry());
@@ -69,4 +82,8 @@ public class SystemFragment extends BaseFragment<FragmentSystemBinding> implemen
         startActivity(intent);
     }
 
+    @Override
+    protected void initData() {
+        viewModel.getSystemData();
+    }
 }

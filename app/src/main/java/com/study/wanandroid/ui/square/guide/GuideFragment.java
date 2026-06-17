@@ -5,11 +5,14 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
+
+import androidx.recyclerview.widget.DiffUtil;
 
 import com.study.wanandroid.base.BaseFragment;
 import com.study.wanandroid.data.model.ArticleBean;
@@ -39,7 +42,7 @@ public class GuideFragment extends BaseFragment<FragmentSystemBinding> implement
             binding.stateLayout.switchView(resource.getState());
         });
         viewModel.getGuides().observe(getViewLifecycleOwner(), guides -> {
-            adapter.setData(guides);
+            adapter.submitList(guides);
         });
     }
 
@@ -47,7 +50,17 @@ public class GuideFragment extends BaseFragment<FragmentSystemBinding> implement
     protected void initViews() {
         binding.stateLayout.setListener(() -> viewModel.onRetry());
         binding.recycleContent.setLayoutManager(new LinearLayoutManager(requireContext()));
-        adapter = new LabelClassfiyAdapter<GuideBean>();
+        adapter = new LabelClassfiyAdapter<GuideBean>(new DiffUtil.ItemCallback<GuideBean>() {
+            @Override
+            public boolean areItemsTheSame(@NonNull GuideBean oldItem, @NonNull GuideBean newItem) {
+                return oldItem.getCid() == newItem.getCid();
+            }
+
+            @Override
+            public boolean areContentsTheSame(@NonNull GuideBean oldItem, @NonNull GuideBean newItem) {
+                return oldItem.equals(newItem);
+            }
+        });
         adapter.setListener(this);  // 文本点击
         binding.recycleContent.setAdapter(adapter);
     }
@@ -64,5 +77,8 @@ public class GuideFragment extends BaseFragment<FragmentSystemBinding> implement
             startActivity(intent);
     }
 
-
+    @Override
+    protected void initData() {
+        viewModel.getGuidesData();
+    }
 }

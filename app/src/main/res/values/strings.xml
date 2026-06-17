@@ -18,6 +18,8 @@
     <string name="my_college">my college</string>
     <string name="my_share">my share</string>
 
+    <string name="network_error_txt">Network is unavailable</string>
+
     <string name="text_out_login">Not logged in</string>
     <string name="register">Register</string>
     <string name="login">Log in</string>

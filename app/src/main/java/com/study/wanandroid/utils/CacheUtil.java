@@ -25,13 +25,16 @@ public class CacheUtil {
      */
     public static Observable<String> getTotalCacheSize(Context context) {
         return Observable.fromCallable(() -> {
-            // 获取内部存储所占缓存（字节 Byte）
             long cacheSize = getFolderSize(context.getCacheDir());
 
-            // 获取外部存储所占内存（外部存储需要处于 已挂载、可读写 状态）
+            // 外部存储
             if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
                 cacheSize += getFolderSize(context.getExternalCacheDir());
             }
+
+            // Room 数据库 getDatabasePath():主数据库文件路径
+            File dbDir = context.getDatabasePath(Constant.DB_NAME).getParentFile();
+            cacheSize += getFolderSize(dbDir);
 
             // 格式化，保留一位字符
             return getFormatSize(cacheSize);

@@ -19,18 +19,15 @@ import com.scwang.smart.refresh.layout.listener.OnRefreshListener;
 import com.study.wanandroid.MyApplication;
 import com.study.wanandroid.R;
 import com.study.wanandroid.base.BaseFragment;
-import com.study.wanandroid.data.model.IBaseArticle;
-import com.study.wanandroid.data.remote.Event;
-import com.study.wanandroid.data.remote.Resource;
-import com.study.wanandroid.ui.me.college.CollectViewModel;
 import com.study.wanandroid.data.model.ArticleBean;
+import com.study.wanandroid.data.remote.Resource;
 import com.study.wanandroid.data.remote.UIState;
 import com.study.wanandroid.databinding.FragmentHomeBinding;
 import com.study.wanandroid.ui.WebViewActivity;
 import com.study.wanandroid.ui.login.LoginActivity;
+import com.study.wanandroid.ui.me.college.CollectViewModel;
 import com.study.wanandroid.utils.Constant;
 import com.study.wanandroid.utils.LogUtil;
-import com.study.wanandroid.utils.NetWorkUtil;
 import com.study.wanandroid.utils.ToastUtil;
 
 import java.util.List;
@@ -68,10 +65,8 @@ public class HomeFragment extends BaseFragment<FragmentHomeBinding> {
             }
         });
         viewModel.getBannerLiveData().observe(getViewLifecycleOwner(), banners -> {
-            if (banners != null && !banners.isEmpty()) {
+            if (banners != null && !banners.isEmpty())
                 bannerAdapter.setItem(banners);
-            }
-            LogUtil.debug(HomeFragment.class, "banners is null" + (banners == null || banners.isEmpty()));
         });
         viewModel.getArticleLiveData().observe(getViewLifecycleOwner(), articles -> {
             if (articles != null && !articles.isEmpty()) {
@@ -102,9 +97,7 @@ public class HomeFragment extends BaseFragment<FragmentHomeBinding> {
 
     @Override
     protected void initData() {
-        if (NetWorkUtil.isOnline(requireContext())) {
-            viewModel.firstLoad();  /* 首次加载 */
-        }
+        viewModel.firstLoad();  /* 首次加载 */
     }
 
     @Override
@@ -175,30 +168,10 @@ public class HomeFragment extends BaseFragment<FragmentHomeBinding> {
      * 初始化加载布局
      */
     private void initRefreshLayout() {
-        binding.refreshLayout.setOnRefreshListener(new OnRefreshListener() {
-            @Override
-            public void onRefresh(RefreshLayout refreshlayout) {    /* 下滑刷新 */
-                if (NetWorkUtil.isOnline(requireContext())) {
-                    viewModel.refresh();
-                }
-            }
-        });
-        binding.refreshLayout.setOnLoadMoreListener(new OnLoadMoreListener() {  /* 上滑加载更多 */
-            @Override
-            public void onLoadMore(RefreshLayout refreshlayout) {
-                if (NetWorkUtil.isOnline(requireContext())) {
-                    viewModel.loadMore();
-                }
-            }
-        });
+        binding.refreshLayout.setOnRefreshListener(refreshLayout -> viewModel.refresh());
+        binding.refreshLayout.setOnLoadMoreListener(refreshLayout -> viewModel.loadMore());
     }
 
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        binding = null;
-    }
 
     @Override
     protected FragmentHomeBinding getViewBinding(LayoutInflater inflater, ViewGroup container) {

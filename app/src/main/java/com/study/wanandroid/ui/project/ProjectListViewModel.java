@@ -80,7 +80,7 @@ public class ProjectListViewModel extends BaseViewModel {
                             }
                         }, throwable -> {
                             first_network_state.postValue(Resource.error(throwable.getMessage()));
-                            LogUtil.error(WxArticleViewModel.class, "数据请求失败：" + throwable.getMessage());
+                            LogUtil.error(ProjectListViewModel.class, "数据请求失败：" + throwable.getMessage());
                         })
         );
 

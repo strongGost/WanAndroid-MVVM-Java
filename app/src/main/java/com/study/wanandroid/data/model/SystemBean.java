@@ -2,6 +2,8 @@ package com.study.wanandroid.data.model;
 
 import android.os.Parcelable;
 
+import com.study.wanandroid.data.local.entity.SystemEntity;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -130,7 +132,7 @@ public class SystemBean implements Parcelable{
         this.visible = visible;
     }
 
-    public List<?> getArticleList() {
+    public List<ArticleBean> getArticleList() {
         return articleList;
     }
 
@@ -148,6 +150,7 @@ public class SystemBean implements Parcelable{
 
     public SystemBean() {
     }
+
 
     @Override
     public int describeContents() {

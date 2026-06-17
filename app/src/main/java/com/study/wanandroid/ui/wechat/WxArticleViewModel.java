@@ -21,12 +21,12 @@ import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 
 public class WxArticleViewModel extends BaseViewModel {
-    private WeChatRepository repository = WeChatRepository.getInstance();
-    private MutableLiveData<Resource> first_network_state = new MutableLiveData<>();    /* 首次加载网络状态（页面状态） */
-    private MutableLiveData<Resource> load_more_network_state = new MutableLiveData<>();    /* 加载更多网络状态（组件状态）*/
-    private MutableLiveData<PageDataBean<List<ArticleBean>>> pageData = new MutableLiveData<>();
-    private MutableLiveData<List<ArticleBean>> historyList = new MutableLiveData<>();
-    private List<ArticleBean> all_history_list = new ArrayList<>(); // 存储历史列表
+    private final WeChatRepository repository = WeChatRepository.getInstance();
+    private final MutableLiveData<Resource> first_network_state = new MutableLiveData<>();    /* 首次加载网络状态（页面状态） */
+    private final MutableLiveData<Resource> load_more_network_state = new MutableLiveData<>();    /* 加载更多网络状态（组件状态）*/
+    private final MutableLiveData<PageDataBean<List<ArticleBean>>> pageData = new MutableLiveData<>();
+    private final MutableLiveData<List<ArticleBean>> historyList = new MutableLiveData<>();
+    private final List<ArticleBean> all_history_list = new ArrayList<>(); // 存储历史列表
     private int wxId;   // 当前分类 id
 
     public void setWxId(int wxId) {
@@ -59,7 +59,6 @@ public class WxArticleViewModel extends BaseViewModel {
 
         addDisposable(
                 repository.getWeChatHistory(wxId, page)
-                        .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(response -> {
                             if (response.isSuccess()) {
@@ -108,7 +107,8 @@ public class WxArticleViewModel extends BaseViewModel {
             return;
         }
         load_more_network_state.setValue(Resource.loading());
-        getWeChatHistory(pageData.getValue().getCurPage() + 1);
+        if (pageData.getValue() != null)
+            getWeChatHistory(pageData.getValue().getCurPage() + 1);
     }
 
 

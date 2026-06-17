@@ -1,9 +1,7 @@
 package com.study.wanandroid.ui.me;
 
 import android.annotation.SuppressLint;
-import android.app.ProgressDialog;
 import android.content.Intent;
-import android.os.Bundle;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,23 +10,15 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.bumptech.glide.Glide;
 import com.study.wanandroid.MyApplication;
 import com.study.wanandroid.R;
 import com.study.wanandroid.base.BaseFragment;
 import com.study.wanandroid.data.model.UserBean;
-import com.study.wanandroid.data.remote.Resource;
 import com.study.wanandroid.data.remote.UIState;
 import com.study.wanandroid.databinding.FragmentMeBinding;
-import com.study.wanandroid.databinding.FragmentSystemBinding;
 import com.study.wanandroid.ui.login.LoginActivity;
 import com.study.wanandroid.ui.me.college.CollegeActivity;
 import com.study.wanandroid.ui.me.score.ScoreActivity;
@@ -112,7 +102,8 @@ public class MeFragment extends BaseFragment<FragmentMeBinding> {
     @Override
     public void onStart() {
         super.onStart();
-        viewModel.getMeData();  // 如果用户登录后，需要刷新用户信息
+        if (getString(R.string.log_out).contentEquals(binding.tvLogout.getText()))
+            viewModel.getMeData();  // 如果用户登录后，此页面由不可见转可见需要刷新用户信息
     }
 
 
@@ -162,6 +153,9 @@ public class MeFragment extends BaseFragment<FragmentMeBinding> {
     protected void initObservers() {
         viewModel.getState().observe(getViewLifecycleOwner(), resource -> {
             if (resource.getState() == UIState.ERROR) {
+                ToastUtil.show(requireContext(), resource.getMsg());
+            } else if (resource.getState() == UIState.NEED_LOGIN) {
+                //  提示"未登录"状态
                 ToastUtil.show(requireContext(), resource.getMsg());
             }
         });
