@@ -22,6 +22,7 @@ import com.study.wanandroid.ui.WebViewActivity;
 import com.study.wanandroid.ui.home.ArticleAdapter;
 import com.study.wanandroid.ui.login.LoginActivity;
 import com.study.wanandroid.utils.Constant  ;
+import com.study.wanandroid.utils.SharePreferenceUtil;
 import com.study.wanandroid.utils.ToastUtil;
 
 public class CollegeActivity extends BaseActivity<ActivityCollegeBinding> {
@@ -29,6 +30,7 @@ public class CollegeActivity extends BaseActivity<ActivityCollegeBinding> {
 
     private CollectViewModel collectViewModel;
     private ArticleAdapter<CollectBean> articleAdapter;
+    private String userName;   // 用户名
 
     @Override
     protected void initViews() {
@@ -37,6 +39,9 @@ public class CollegeActivity extends BaseActivity<ActivityCollegeBinding> {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         }));
+        if (getIntent() != null) {
+            userName = getIntent().getStringExtra(Constant.ME_INFO);
+        }
         // 设置状态栏颜色、状态栏文字颜色
         MyApplication.updateStatusBar(this, getColor(R.color.main_color));
         MyApplication.updateStatusBarTextColor(this, false);
@@ -99,7 +104,7 @@ public class CollegeActivity extends BaseActivity<ActivityCollegeBinding> {
 
             // 设置用户名（建议只设置一次）
             if (binding.tvUsernameCollapsed.getText().length() == 0) {
-                binding.tvUsernameCollapsed.setText("July");
+                binding.tvUsernameCollapsed.setText(userName);
             }
         });
     }

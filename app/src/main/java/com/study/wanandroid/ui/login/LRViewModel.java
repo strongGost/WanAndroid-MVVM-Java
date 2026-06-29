@@ -7,6 +7,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.study.wanandroid.base.BaseViewModel;
+import com.study.wanandroid.data.model.MeInfo;
 import com.study.wanandroid.data.model.UserBean;
 import com.study.wanandroid.data.remote.Resource;
 import com.study.wanandroid.data.remote.UIState;
@@ -56,8 +57,10 @@ public class LRViewModel extends BaseViewModel {
                             if (response.isSuccess()) {
                                 states.setValue(Resource.success("登录成功"));
                                 userInfo.setValue(response.getData());
-                                /* 当前用户信息保存到 SharePreference */
-                                SharePreferenceUtil.saveTo(Constant.ME_INFO, response.getData());
+                                /* 当前用户信息包装为 MeInfo 保存到 SharePreference */
+                                MeInfo meInfo = new MeInfo();
+                                meInfo.setUserInfo(response.getData());
+                                SharePreferenceUtil.saveTo(Constant.ME_INFO, meInfo);
                             } else {
                                 states.setValue(Resource.error(response.getErrorMsg()));
                             }

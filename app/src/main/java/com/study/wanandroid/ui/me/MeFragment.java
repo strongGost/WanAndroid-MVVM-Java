@@ -16,7 +16,8 @@ import androidx.lifecycle.ViewModelProvider;
 import com.study.wanandroid.MyApplication;
 import com.study.wanandroid.R;
 import com.study.wanandroid.base.BaseFragment;
-import com.study.wanandroid.data.model.UserBean;
+
+import com.study.wanandroid.data.model.MeInfo;
 import com.study.wanandroid.data.remote.UIState;
 import com.study.wanandroid.databinding.FragmentMeBinding;
 import com.study.wanandroid.ui.login.LoginActivity;
@@ -24,6 +25,7 @@ import com.study.wanandroid.ui.me.college.CollegeActivity;
 import com.study.wanandroid.ui.me.score.ScoreActivity;
 import com.study.wanandroid.ui.me.share.ShareActivity;
 import com.study.wanandroid.utils.Constant;
+import com.study.wanandroid.utils.LogUtil;
 import com.study.wanandroid.utils.SharePreferenceUtil;
 import com.study.wanandroid.utils.ToastUtil;
 
@@ -31,6 +33,7 @@ public class MeFragment extends BaseFragment<FragmentMeBinding> {
 
     private MeViewModel viewModel;
     private int score;
+    private String userName;
     private AlertDialog loadingDialog;
 
     @Override
@@ -76,7 +79,8 @@ public class MeFragment extends BaseFragment<FragmentMeBinding> {
      */
     private void goToActivity(int pos) {
         // 未登录状态：跳转到登录页面
-        if (SharePreferenceUtil.getObj(Constant.ME_INFO, UserBean.class) == null) { //
+        MeInfo meInfo = SharePreferenceUtil.getObj(Constant.ME_INFO, MeInfo.class);
+        if (meInfo == null || meInfo.getUserInfo() == null) { //
             Intent intent = new Intent(requireContext(), LoginActivity.class);
             startActivity(intent);
             return;
@@ -89,6 +93,7 @@ public class MeFragment extends BaseFragment<FragmentMeBinding> {
                 break;
             case 1: // 收藏页面
                 intent = new Intent(requireContext(), CollegeActivity.class);
+                intent.putExtra(Constant.ME_INFO, userName);
                 break;
             case 2: // 分享页面
                 intent = new Intent(requireContext(), ShareActivity.class);
@@ -102,8 +107,7 @@ public class MeFragment extends BaseFragment<FragmentMeBinding> {
     @Override
     public void onStart() {
         super.onStart();
-        if (getString(R.string.log_out).contentEquals(binding.tvLogout.getText()))
-            viewModel.getMeData();  // 如果用户登录后，此页面由不可见转可见需要刷新用户信息
+        viewModel.getMeData();  // 如果用户登录后，此页面由不可见转可见需要刷新用户信息
     }
 
 
@@ -170,17 +174,24 @@ public class MeFragment extends BaseFragment<FragmentMeBinding> {
                 binding.tvNowScore.setText("");
                 return;
             }
+
+            // userInfo 为空时（旧数据兼容/网络异常），不展示
+            if (data.getUserInfo() == null) return;
+
+            userName = data.getUserInfo().getUsername();
             score = data.getUserInfo().getCoinCount();
-            binding.headerLayout.tvAccount.setText(data.getUserInfo().getUsername());
+            binding.headerLayout.tvAccount.setText(userName);
             binding.headerLayout.tvId.setText(String.format("ID.%d", data.getUserInfo().getId()));
-            binding.headerLayout.tvLevel.setText("lv." + data.getCoinInfo().getLevel());
-            binding.tvNowScore.setText("当前积分：" + data.getUserInfo().getCoinCount());
-            if (data.getCoinInfo().getUsername() != null && !data.getCoinInfo().getUsername().isEmpty()) {
-                binding.headerLayout.tvLevel.setVisibility(View.VISIBLE);
-                binding.headerLayout.tvId.setVisibility(View.VISIBLE);
-            } else {
-                binding.headerLayout.tvLevel.setVisibility(View.GONE);
-                binding.headerLayout.tvId.setVisibility(View.GONE);
+            binding.tvNowScore.setText("当前积分：" + score);
+            if (data.getCoinInfo() != null) {
+                binding.headerLayout.tvLevel.setText("lv." + data.getCoinInfo().getLevel());
+                if (data.getCoinInfo().getUsername() != null && !data.getCoinInfo().getUsername().isEmpty()) {
+                    binding.headerLayout.tvLevel.setVisibility(View.VISIBLE);
+                    binding.headerLayout.tvId.setVisibility(View.VISIBLE);
+                } else {
+                    binding.headerLayout.tvLevel.setVisibility(View.GONE);
+                    binding.headerLayout.tvId.setVisibility(View.GONE);
+                }
             }
         });
         viewModel.getCacheSize().observe(getViewLifecycleOwner(), size -> {

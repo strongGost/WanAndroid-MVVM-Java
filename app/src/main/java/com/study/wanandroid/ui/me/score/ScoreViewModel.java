@@ -8,7 +8,7 @@ import androidx.lifecycle.MutableLiveData;
 import com.study.wanandroid.base.BaseViewModel;
 import com.study.wanandroid.data.model.PageDataBean;
 import com.study.wanandroid.data.model.ScoreBean;
-import com.study.wanandroid.data.model.UserBean;
+import com.study.wanandroid.data.model.MeInfo;
 import com.study.wanandroid.data.remote.Resource;
 import com.study.wanandroid.data.remote.UIState;
 import com.study.wanandroid.data.repository.ScoreRepository;
@@ -45,7 +45,8 @@ public class ScoreViewModel extends BaseViewModel {
             return;
         }
         // 未登录状态
-        if (SharePreferenceUtil.getObj(Constant.ME_INFO, UserBean.class) == null) {
+        MeInfo meInfo = SharePreferenceUtil.getObj(Constant.ME_INFO, MeInfo.class);
+        if (meInfo == null || meInfo.getUserInfo() == null) {
             status.setValue(Resource.error("未登录"));
             return;
         }

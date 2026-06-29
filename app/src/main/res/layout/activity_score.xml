@@ -1,23 +1,75 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     tools:context=".ui.me.score.ScoreActivity">
 
-    <!-- 标题栏 (固定不变) -->
-    <include
-        android:id="@+id/view_head"
-        layout="@layout/view_toolbar" />
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appBarLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/main_color">
 
-    <!-- 网络加载显示的区域 -->
+        <com.google.android.material.appbar.CollapsingToolbarLayout
+            android:id="@+id/collapsing_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="220dp"
+            app:layout_scrollFlags="scroll|exitUntilCollapsed"
+            app:titleEnabled="false"
+            app:contentScrim="@color/main_color">
+
+            <!-- 展开时的积分头部 -->
+            <LinearLayout
+                android:id="@+id/layout_score_header"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/tv_score_value"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/white"
+                    android:textSize="50sp"
+                    tools:text="123" />
+
+            </LinearLayout>
+
+            <!-- Toolbar -->
+            <androidx.appcompat.widget.Toolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                app:layout_collapseMode="pin"
+                app:navigationIcon="@drawable/baseline_chevron_white_left_24"
+                app:contentInsetStartWithNavigation="0dp"
+                app:contentInsetStart="0dp">
+
+                <TextView
+                    android:id="@+id/tv_toolbar_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/my_score"
+                    android:textColor="@color/white"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+            </androidx.appcompat.widget.Toolbar>
+
+        </com.google.android.material.appbar.CollapsingToolbarLayout>
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <!-- 列表区域：StateLayout 只控制积分列表 -->
     <com.study.wanandroid.ui.widget.StateLayout
         android:id="@+id/state_layout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
         <com.scwang.smart.refresh.layout.SmartRefreshLayout
             android:id="@+id/layout_smart"
             android:layout_width="match_parent"
@@ -28,14 +80,14 @@
                 android:id="@+id/recycle_score"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:background="@color/white"
                 android:overScrollMode="never" />
+
             <com.scwang.smart.refresh.footer.ClassicsFooter
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
-
         </com.scwang.smart.refresh.layout.SmartRefreshLayout>
-
 
     </com.study.wanandroid.ui.widget.StateLayout>
 
-</LinearLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

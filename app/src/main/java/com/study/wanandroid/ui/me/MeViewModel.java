@@ -73,13 +73,16 @@ public class MeViewModel extends AndroidViewModel {
         // 1. 清除 Glide 内存缓存（必须在主线程）
         CacheUtil.clearGlideMemory(getApplication());
 
-        // 2. 清除磁盘 + Glide 磁盘缓存（必须在后台线程）
+        // 2. 清除磁盘 + Glide + Room 数据库缓存（必须在后台线程）
         disposable.add(
                 CacheUtil.clearAll(getApplication())
+                        .flatMapCompletable(success ->
+                                AppDatabase.getInstance(getApplication()).clearAllCaches()
+                        )
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(success -> {
-                            clearCacheSuccess.setValue(new Event<>(success));
+                        .subscribe(() -> {
+                            clearCacheSuccess.setValue(new Event<>(true));
                             calculateCacheSize();  // 重新计算
                         }, throwable -> {
                             clearCacheSuccess.setValue(new Event<>(false));
@@ -94,8 +97,12 @@ public class MeViewModel extends AndroidViewModel {
     public void getMeData() {
         // 1. 先读取本地缓存
         MeInfo localData = SharePreferenceUtil.getObj(Constant.ME_INFO, MeInfo.class);
-        if (localData != null) {
+        if (localData != null && localData.getUserInfo() != null) {
             meInfo.setValue(localData);
+        } else if (localData != null && localData.getUserInfo() == null) {
+            // 旧版登录存入的 UserBean 数据被错误反序列化，视为无效缓存
+            SharePreferenceUtil.remove(Constant.ME_INFO);
+            meInfo.setValue(null);
         } else {
             meInfo.setValue(null);  // 未登录时也要触发 observer，让 UI 刷新为未登录状态
         }

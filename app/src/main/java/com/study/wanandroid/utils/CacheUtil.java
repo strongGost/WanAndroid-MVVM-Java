@@ -52,7 +52,7 @@ public class CacheUtil {
     private static String getFormatSize(double size) {
         // 转 KB
         double kb = size / 1024;
-        if (kb < 1) return size + " B";  // 1 kb都没有直接显示 0KB
+        if (kb < 1) return "0 KB";
 
         // 转 MB
         double mb = kb / 1024;

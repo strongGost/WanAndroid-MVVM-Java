@@ -4,9 +4,11 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
-import com.chad.library.adapter4.QuickAdapterHelper;
+import com.google.android.material.appbar.AppBarLayout;
+import com.study.wanandroid.MyApplication;
 import com.study.wanandroid.R;
 import com.study.wanandroid.base.BaseActivity;
 import com.study.wanandroid.data.remote.UIState;
@@ -25,22 +27,37 @@ public class ScoreActivity extends BaseActivity<ActivityScoreBinding> {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-        SingleItemViewAdapter<Integer> singleItemAdapter = new SingleItemViewAdapter<>();
-        if (getIntent() != null) {
-            singleItemAdapter.setItem(getIntent().getIntExtra(Constant.Data_KEY, 0));
-        }
-        binding.viewHead.tvToolTitle.setText(R.string.my_score);
-        binding.viewHead.imageView.setOnClickListener(v -> finish());
+
+        // 状态栏颜色
+        MyApplication.updateStatusBar(this, getColor(R.color.main_color));
+        MyApplication.updateStatusBarTextColor(this, false);
+
+        // 积分头部：从 Intent 读取积分值并动画展示
+        int score = getIntent() != null ? getIntent().getIntExtra(Constant.Data_KEY, 0) : 0;
+        MyApplication.startAnim(binding.tvScoreValue, score, 2000);
+
+        // 手动控制积分头部淡出速度：multiplier 越大消失越快
+        binding.appBarLayout.addOnOffsetChangedListener(
+                new AppBarLayout.OnOffsetChangedListener() {
+                    private final float FADE_SPEED = 3.0f; // 可调整：1.0=最慢(默认), 3.0=快速淡化
+
+                    @Override
+                    public void onOffsetChanged(@NonNull AppBarLayout appBarLayout, int verticalOffset) {
+                        int totalRange = appBarLayout.getTotalScrollRange();
+                        float progress = Math.abs(verticalOffset) * 1.0f / totalRange;
+                        binding.layoutScoreHeader.setAlpha(1 - Math.min(progress * FADE_SPEED, 1f));
+                    }
+                });
+
+        // Toolbar
+        binding.toolbar.setNavigationOnClickListener(v -> finish());
+
+        // 列表加载 & 状态
         binding.stateLayout.setListener(this::onRetry);
-        binding.layoutSmart.setOnLoadMoreListener(refreshLayout -> {
-            viewModel.getScoreList();
-        });
+        binding.layoutSmart.setOnLoadMoreListener(refreshLayout -> viewModel.getScoreList());
         scoreAdapter = new ScoreAdapter();
-        QuickAdapterHelper adapterHelper = new QuickAdapterHelper.Builder(scoreAdapter)
-                .build();
-        adapterHelper.addBeforeAdapter(singleItemAdapter);
         binding.recycleScore.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
-        binding.recycleScore.setAdapter(adapterHelper.getAdapter());
+        binding.recycleScore.setAdapter(scoreAdapter);
     }
 
     private void onRetry() {

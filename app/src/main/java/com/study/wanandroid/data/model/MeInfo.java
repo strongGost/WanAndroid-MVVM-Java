@@ -18,4 +18,13 @@ public class MeInfo {
 
     public UserBean getUserInfo() { return userInfo; }
     public void setUserInfo(UserBean userInfo) { this.userInfo = userInfo; }
+
+
+    @Override
+    public String toString() {
+        return "MeInfo{" +
+                "coinInfo=" + coinInfo +
+                ", userInfo=" + userInfo +
+                '}';
+    }
 }
